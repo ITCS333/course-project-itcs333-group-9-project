@@ -3,6 +3,8 @@
 # ITCS### Course Page
 
 ## The names and student IDs of all team members.
+Moayed Ali Ebrahim Mubarak 202307169
+Ali Hasan Ali Kadhem 202302877
 
 ## A table indicating which student was responsible for which task.
 
