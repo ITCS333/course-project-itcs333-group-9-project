@@ -1,11 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Story+Script&display=swap');
 
-
 :root
 {
   --main-font-family: "Story Script", sans-serif;
   --main-font-weight: 400;
   --main-font-style: normal
+  
+  --secondry-font-family: "Story Script", sans-serif;
+  --secondry-font-weight: "Story Script", sans-serif;
+  --secondry-font-style: "Story Script", sans-serif;
+    
+  --main-background-color: #1B3454;
+  --main-text-color: #ffffff;
+  --secondry-background-color: #26A7AA;
 }
 
 *
@@ -24,7 +31,7 @@
   justify-content: center;
   align-items: center;
   height: 10vh;
-  background-color: #333;
+  background-color: var(--main-background-color);
   color: white;
   font-size: 45px
 }
