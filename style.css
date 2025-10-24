@@ -1,14 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Pattaya&family=Story+Script&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Story+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root
 {
-  --main-font-family: "Story Script", sans-serif;
-  --main-font-weight: 400;
-  --main-font-style: normal
+  --header-font-family: "Pattaya", sans-serif;
+  --header-font-weight: 400;
+  --header-font-style: normal;
   
-  --secondry-font-family: "Story Script", sans-serif;
-  --secondry-font-weight: "Story Script", sans-serif;
-  --secondry-font-style: "Story Script", sans-serif;
+  --title-font-family: "Story Script", sans-serif;
+  --title-font-weight: 400;
+  --title-font-style: normal;
+  
+  --subtitle-font-family: "PT Serif", serif;
+  --subtitle-font-weight: 400;
+  --subtitle-font-style: normal;
     
   --main-background-color: #1B3454;
   --main-text-color: #ffffff;
@@ -20,58 +26,61 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+  background-color: #f0f0f0;
 }
 
 .header
 {
-  font-family: var(--main-font-family);
-  font-weight: var(--main-font-weight);
-  font-style: var(--main-font-style);
+  font-family: var(--header-font-family);
+  font-weight: var(--header-font-weight);
+  font-style: var(--header-font-style);
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
   height: 10vh;
   background-color: var(--main-background-color);
-  color: white;
-  font-size: 45px
+  color: var(--main-text-color);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  padding-left: 1vw;
+  font-size: 3rem;
+  
 }
 
 .main-content
 {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   height: 50vh;
-  background-color: #f0f0f0;
-}
+}  
+
 
 nav
 {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-evenly;
+  flex-direction: column;
+  margin: 2rem;
   max-width: 1000px;
 }
 
 h2
 {
-  font-family: var(--main-font-family);
-  font-weight: var(--main-font-weight);
-  font-style: var(--main-font-style);
-  margin-right: 15vw;
+  font-family: var(--title-font-family);
+  font-weight: var(--title-font-weight);
+  font-style: var(--title-font-style);
+  font-size: 2.3rem;
+  letter-spacing: 3px;
 }
 
 ul > li
 {
-  display: inline-block; 
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 15px;
+  margin-top: 15px;
+  font-family: var(--subtitle-font-family);
+  font-weight: var(--subtitle-font-weight);
+  font-style: var(--subtitle-font-style);
+  font-size: 20px;
 }
 
 ul > li > a
@@ -79,3 +88,4 @@ ul > li > a
   text-decoration: none;
   color: black;
 }
+
