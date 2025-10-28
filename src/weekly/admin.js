@@ -17,8 +17,10 @@ let weeks = [];
 
 // --- Element Selections ---
 // TODO: Select the week form ('#week-form').
+const weekForm = document.getElementById("week-form");
 
 // TODO: Select the weeks table body ('#weeks-tbody').
+const weeksTbody = document.getElementById("weeks-tbody");
 
 // --- Functions ---
 
@@ -34,6 +36,30 @@ let weeks = [];
  */
 function createWeekRow(week) {
   // ... your implementation here ...
+  const tableRow = document.createElement("tr");
+  const weekTitleTd = document.createElement("td");
+  weekTitleTd.innerText = week.title;
+  weekTitleTd.classList.add("weeks-td");
+  const weekDecriptionTd = document.createElement("td");
+  weekDecriptionTd.innerText = week.description;
+  weekDecriptionTd.classList.add("weeks-td", "desc");
+  tableRow.appendChild(weekTitleTd);
+  tableRow.appendChild(weekDecriptionTd);
+  const lastTableDataElement = document.createElement("td");
+  const editButton = document.createElement("button");
+  const deleteButton = document.createElement("button");
+  editButton.innerText = "Edit";
+  deleteButton.innerText = "Delete";
+  editButton.classList.add("edit-btn", "edit", "action-btn");
+  deleteButton.classList.add("delete-btn", "edit", "action-btn");
+
+  deleteButton.dataset.id = week.id;
+
+  lastTableDataElement.appendChild(editButton);
+  lastTableDataElement.appendChild(deleteButton);
+  lastTableDataElement.classList.add("weeks-td");
+  tableRow.appendChild(lastTableDataElement);
+  return tableRow;
 }
 
 /**
@@ -46,6 +72,11 @@ function createWeekRow(week) {
  */
 function renderTable() {
   // ... your implementation here ...
+  const tableBody = document.getElementById("weeks-tbody");
+  tableBody.innerHTML = "";
+  weeks.map((week) => {
+    tableBody.appendChild(createWeekRow(week));
+  });
 }
 
 /**
@@ -63,6 +94,22 @@ function renderTable() {
  */
 function handleAddWeek(event) {
   // ... your implementation here ...
+  event.preventDefault();
+  const title = document.getElementById("week-title").value;
+  const startDate = document.getElementById("week-start-date").value;
+  const description = document.getElementById("week-description").value;
+  const weekLinks = document.getElementById("week-links").value.split("\n");
+  console.log(weekLinks);
+  const weekObj = {
+    id: `week_${Date.now()}`,
+    title,
+    startDate,
+    description,
+    links: weekLinks,
+  };
+  weeks.push(weekObj);
+  renderTable();
+  event.target.reset();
 }
 
 /**
@@ -77,6 +124,10 @@ function handleAddWeek(event) {
  */
 function handleTableClick(event) {
   // ... your implementation here ...
+  if (event.target.classList.contains("delete-btn")) {
+    weeks = weeks.filter((week) => week.id != event.target.dataset.id);
+    renderTable();
+  }
 }
 
 /**
@@ -91,6 +142,15 @@ function handleTableClick(event) {
  */
 async function loadAndInitialize() {
   // ... your implementation here ...
+  const data = await (await fetch("api/weeks.json")).json();
+  weeks = data;
+  renderTable();
+  document
+    .getElementById("week-form")
+    .addEventListener("submit", handleAddWeek);
+  document
+    .getElementById("weeks-tbody")
+    .addEventListener("click", handleTableClick);
 }
 
 // --- Initial Page Load ---

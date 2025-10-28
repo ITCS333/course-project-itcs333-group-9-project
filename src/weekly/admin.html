@@ -15,6 +15,7 @@
     <title>Manage Weekly Breakdown</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
     <link rel="stylesheet" href="student3Styles.css" />
+    <script src="admin.js" defer></script>
   </head>
   <body class="app-container">
     <!-- TODO: Create a 'header' with a main heading ('h1') "Manage Weekly Breakdown". -->
@@ -98,7 +99,7 @@
         <h2 class="section-title">Current Weekly Breakdown</h2>
 
         <!-- TODO: Create a 'table' with id "weeks-table". -->
-        <table id="weeks-table" class="weeks-table" style="width: 100%">
+        <table id="weeks-table" class="weeks-table">
           <!-- TODO: Create a 'thead' and a 'tr' inside it. -->
           <thead class="weeks-thead">
             <tr class="weeks-row"></tr>
@@ -109,20 +110,20 @@
           <th class="weeks-th">Actions</th>
 
           <!-- TODO: Create a 'tbody' for the data. -->
-          <tbody>
+          <tbody id="weeks-tbody">
             <!-- TODO: Add 1-2 rows of dummy data to see the structure. -->
             <!-- Example Row 1: -->
             <!-- TODO: Create a 'tr' for the first week. -->
             <!-- TODO: Add 'td' cells for a title (e.g., "Week 1: Intro to HTML") and a short description. -->
             <tr class="weeks-row">
               <td class="weeks-td">Week 1: Intro to HTML</td>
-              <td class="weeks-td">Sample Description</td>
+              <td class="weeks-td desc">Sample Description</td>
               <!-- TODO: Add a 'td' containing the action buttons. -->
               <td class="weeks-td">
                 <!-- TODO: Add an "Edit" button. -->
-                <button class="action-btn edit">Edit</button>
+                <button class="edit-btn action-btn edit">Edit</button>
                 <!-- TODO: Add a "Delete" button. -->
-                <button class="action-btn edit">Delete</button>
+                <button class="delete-btn action-btn edit">Delete</button>
                 <!-- End of actions 'td'. -->
               </td>
               <!-- End of the row. -->
