@@ -1,0 +1,432 @@
+/* ===============================
+   CSS Variables - Professional Theme
+   =============================== */
+:root {
+  --primary-50: #eff6ff;
+  --primary-100: #dbeafe;
+  --primary-500: #3b82f6;
+  --primary-600: #2563eb;
+  --primary-700: #1d4ed8;
+  --primary-800: #1e40af;
+  --primary-900: #1e3a8a;
+
+  --success-500: #10b981;
+  --success-600: #059669;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+  --danger-500: #ef4444;
+  --danger-600: #dc2626;
+
+  --neutral-50: #fafafa;
+  --neutral-100: #f4f4f5;
+  --neutral-200: #e4e4e7;
+  --neutral-300: #d4d4d8;
+  --neutral-400: #a1a1aa;
+  --neutral-500: #71717a;
+  --neutral-600: #52525b;
+  --neutral-700: #3f3f46;
+  --neutral-800: #27272a;
+  --neutral-900: #18181b;
+
+  --white: #ffffff;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===============================
+   Base Reset & Typography
+   =============================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.app-container {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+  min-height: 100vh;
+  color: var(--neutral-800);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===============================
+   Header - Enterprise Style
+   =============================== */
+.header-container {
+  background: var(--white);
+  border-bottom: 1px solid var(--neutral-200);
+  box-shadow: var(--shadow-sm);
+  padding: 1.75rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.header-title {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+  letter-spacing: -0.025em;
+  text-align: center;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.header-title::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -8px;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-600), var(--primary-500));
+  border-radius: 2px;
+}
+
+/* ===============================
+   Main Content Container
+   =============================== */
+.main-content {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   Section Containers
+   =============================== */
+section {
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--neutral-200);
+  transition: box-shadow var(--transition-slow);
+}
+
+section:hover {
+  box-shadow: var(--shadow-xl);
+}
+
+/* ===============================
+   Section Headings
+   =============================== */
+.section-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neutral-900);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--neutral-100);
+  letter-spacing: -0.025em;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-title::before {
+  content: "";
+  width: 4px;
+  height: 32px;
+  background: linear-gradient(180deg, var(--primary-600), var(--primary-500));
+  border-radius: 2px;
+}
+
+/* ===============================
+   Professional Form Design
+   =============================== */
+.week-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.week-fieldset {
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  background: linear-gradient(180deg, var(--neutral-50) 0%, var(--white) 100%);
+  transition: all var(--transition-base);
+}
+
+.week-fieldset:focus-within {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.week-legend {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--neutral-900);
+  padding: 0 1rem;
+  background: var(--white);
+  letter-spacing: -0.015em;
+}
+
+.week-label {
+  display: block;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--neutral-700);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.week-input,
+.week-textarea {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 1.5px solid var(--neutral-300);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--neutral-900);
+  /* transition: all var(--transition-base); */
+  box-shadow: var(--shadow-xs);
+}
+
+.week-input:hover,
+.week-textarea:hover {
+  border-color: var(--neutral-400);
+}
+
+.week-input:focus,
+.week-textarea:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), var(--shadow-sm);
+  background: var(--white);
+}
+
+.week-input::placeholder,
+.week-textarea::placeholder {
+  color: var(--neutral-400);
+}
+
+.week-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+  font-family: inherit;
+}
+
+/* ===============================
+   Premium Button Design
+   =============================== */
+.add-week-btn {
+  margin-top: 2rem;
+  background: var(--primary-600);
+  color: var(--white);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
+
+.add-week-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.add-week-btn:hover {
+  background: var(--primary-700);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.add-week-btn:hover::before {
+  left: 100%;
+}
+
+.add-week-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===============================
+   Professional Table Design
+   =============================== */
+.weeks-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--neutral-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.weeks-thead {
+  background: linear-gradient(
+    180deg,
+    var(--neutral-800) 0%,
+    var(--neutral-900) 100%
+  );
+}
+
+.weeks-th {
+  padding: 2rem 1.5rem;
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.75rem;
+  /* color: var(--white); */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: none;
+}
+
+.weeks-td {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--neutral-200);
+  color: var(--neutral-700);
+  font-size: 0.9375rem;
+  background: var(--white);
+  /* background-color: red; */
+  /* width: "100%"; */
+}
+
+.weeks-row {
+  transition: all var(--transition-base);
+}
+
+.weeks-row:hover {
+  background: var(--neutral-50);
+}
+
+.weeks-row:hover .weeks-td {
+  color: var(--neutral-900);
+  background: var(--neutral-50);
+}
+
+.weeks-row:last-child .weeks-td {
+  border-bottom: none;
+}
+
+/* ===============================
+   Premium Action Buttons
+   =============================== */
+.action-btn {
+  margin-right: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  /* background: rgba(255, 255, 255, 0.3); */
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.action-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.action-btn.edit {
+  background: var(--warning-500);
+  color: var(--white);
+  border: 1px solid var(--warning-600);
+}
+
+.action-btn.edit:hover {
+  background: var(--warning-600);
+  /* transform: translateY(-1px); */
+  /* box-shadow: var(--shadow-md); */
+}
+
+.action-btn.delete {
+  background: var(--danger-500);
+  color: var(--white);
+  border: 1px solid var(--danger-600);
+}
+
+.action-btn.delete:hover {
+  background: var(--danger-600);
+  /* transform: translateY(-1px); */
+  /* box-shadow: var(--shadow-md); */
+}
+
+.action-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+/* ===============================
+   Professional Responsive Design
+   =============================== */
