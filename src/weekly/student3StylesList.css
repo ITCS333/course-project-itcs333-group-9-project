@@ -150,6 +150,8 @@
   transition: all var(--transition-slow);
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .week-card::before {
@@ -224,6 +226,11 @@
   font-size: 0.9375rem;
   line-height: 1.8;
   margin-bottom: 1.5rem;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ===============================
@@ -246,6 +253,8 @@
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .week-link::before {
