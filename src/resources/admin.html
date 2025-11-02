@@ -9,79 +9,130 @@
 <html lang="en">
 <head>
     <!-- TODO: Add the 'meta' tag for character encoding (UTF-8). -->
-    
+    <meta charset="UTF-8">
+
     <!-- TODO: Add the responsive 'viewport' meta tag.
          The 'name' should be 'viewport' and the 'content' should set the 'width' to 'device-width'
          and the 'initial-scale' to '1.0'. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- TODO: Add a title, e.g., "Manage Resources". -->
+    <title>Manage Resources</title>
 
     <!-- TODO: Link to your CSS framework or stylesheet. -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <!-- TODO: Create a 'header' with a main heading ('h1') "Manage Course Resources". -->
+    <header>
+        <h1>Manage Course Resources</h1>
+        <hr>
+    </header>
 
     <!-- TODO: Create the 'main' content area. -->
+    <main>
 
         <!-- Section 1: Add/Edit Resource Form -->
         <!-- TODO: Create a 'section' for the form. -->
+        <section id="add-edit-section">
             <!-- TODO: Add a sub-heading ('h2') "Add a New Resource". -->
+            <h2>Add a New Resource</h2>
 
             <!-- TODO: Create a 'form' with an id "resource-form". Action can be '#'. -->
+            <form id="resource-form" action="#">
                 <!-- TODO: Use a 'fieldset' to group the form controls. -->
+                <fieldset>
                     <!-- TODO: Add a 'legend', e.g., "Resource Details". -->
+                    <legend>Resource Details</legend>
 
                     <!-- TODO: Add a 'label' and 'input' for the resource title.
                          - label 'for': "resource-title"
                          - input 'id': "resource-title", type="text", required -->
+                    <label for="resource-title">Resource Title:</label><br>
+                    <input type="text" id="resource-title" name="title" placeholder="e.g. Chapter 1 Notes" required><br><br>
 
                     <!-- TODO: Add a 'label' and 'textarea' for the resource description.
                          - label 'for': "resource-description"
                          - textarea 'id': "resource-description" -->
+                    <label for="resource-description">Description:</label><br>
+                    <textarea id="resource-description" name="description" rows="4" cols="50" placeholder="Enter a brief description..."></textarea><br><br>
                     
                     <!-- TODO: Add a 'label' and 'input' for the resource link.
                          - label 'for': "resource-link"
                          - input 'id': "resource-link", type="url", required -->
+                    <label for="resource-link">Resource Link:</label><br>
+                    <input type="url" id="resource-link" name="link" placeholder="e.g. https://example.com/notes.pdf" required><br><br>
 
                     <!-- TODO: Add a 'button' to submit the form.
                          - id="add-resource", type="submit", Text: "Add Resource" -->
-                <!-- End of fieldset. -->
-            <!-- End of form. -->
-        <!-- End of form section. -->
-
+                    <button id="add-resource" type="submit">Add Resource</button>
+                </fieldset>
+            </form>
+        </section>
 
         <!-- Section 2: Existing Resources List -->
         <!-- TODO: Create a 'section' to display the list of current resources. -->
+        <section id="list-section">
             <!-- TODO: Add a sub-heading ('h2') "Existing Resources". -->
+            <h2>Existing Resources</h2>
 
             <!-- TODO: Create a 'table' with id "resources-table". -->
+            <table id="resources-table" border="1" cellpadding="8" cellspacing="0">
                 <!-- TODO: Create a 'thead' and a 'tr' inside it. -->
-                    <!-- TODO: Add 'th' elements for "Title", "Description", and "Actions". -->
-                
+                <thead>
+                    <tr>
+                        <!-- TODO: Add 'th' elements for "Title", "Description", and "Actions". -->
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
                 <!-- TODO: Create a 'tbody' for the data. -->
+                <tbody>
                     <!-- TODO: Add 2-3 rows of dummy data to see the structure. -->
+
                     <!-- Example Row 1: -->
                     <!-- TODO: Create a 'tr' for the first resource. -->
+                    <tr>
                         <!-- TODO: Add 'td' cells for a title (e.g., "Chapter 1 Notes") and a description. -->
+                        <td>Chapter 1 Notes</td>
+                        <td>Introduction to HTML and CSS basics.</td>
                         
                         <!-- TODO: Add a 'td' containing the action buttons. -->
+                        <td>
                             <!-- TODO: Add an "Edit" button. -->
+                            <button class="edit-btn">Edit</button>
                             <!-- TODO: Add a "Delete" button. -->
-                        <!-- End of actions 'td'. -->
+                            <button class="delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- End of actions 'td'. -->
                     <!-- End of the row. -->
 
                     <!-- Example Row 2: -->
                     <!-- TODO: Create another 'tr' for a second resource (e.g., a web link). -->
+                    <tr>
                         <!-- TODO: Add 'td' cells for the title and description. -->
+                        <td>Web Development Guide</td>
+                        <td>External link to MDN documentation.</td>
+
                         <!-- TODO: Add a 'td' with "Edit" and "Delete" buttons. -->
+                        <td>
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </td>
+                    </tr>
                     <!-- End of the row. -->
+                </tbody>
+            </table>
+        </section>
 
-                <!-- End of tbody. -->
-            <!-- End of table. -->
-        <!-- End of resources list section. -->
-
+    </main>
     <!-- End of main. -->
+
 </body>
 </html>
+
 
