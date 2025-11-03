@@ -44,6 +44,10 @@ const messageContainer = document.getElementById('message-container');
  */
 function displayMessage(message, type) {
   // ... your implementation here ...
+  if (messageContainer) { 
+    messageContainer.textContent = message;
+    messageContainer.ClassName = type;
+  }
 }
 
 /**
@@ -60,6 +64,8 @@ function displayMessage(message, type) {
  */
 function isValidEmail(email) {
   // ... your implementation here ...
+  
+
 }
 
 /**
