@@ -25,12 +25,13 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
 
      <style>
-          #message-container {
-                      margin-top: 1rem;
-                      padding: 1rem;
-                      border-radius: var(--border-radius);
-                      font-weight: bold;
-                  }
+        #message-container
+        {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-weight: bold;
+        }
                   .error {
                       background-color: var(--pico-red-200);
                       color: var(--pico-red-900);
@@ -39,7 +40,7 @@
                       background-color: var(--pico-green-200);
                       color: var(--pico-green-900);
                   }
-              </style>
+    </style>
 
 </head>
 <body <!-- TODO: Add any styling to the 'body' tag to center the login form on the page. -->>
@@ -93,32 +94,25 @@
                          - It should be a required field.
                          - For validation, add a 'minlength' attribute (e.g., minlength="8"). -->
                                  <input type="password" id="password" name="password" required minlength="10">
-                
-
                     <!-- This is the form submission button. -->
                     <!-- TODO: Add a 'button' to submit the form, inside the fieldset.
                          - The type should be "submit".
                          - The id must be "login".
                          - The text should be "Log In". -->
                                  <button type="submit" id="login">Login </button>
-                
                 <!-- End of the fieldset. -->
                                     </fieldset>
                            <div id ="message-container"></div>
-
-
             <!-- End of the form element. -->
                             </form>
                         </div>
-
-
         <!-- End of the login section. -->
-                            </section>
+            </section>
 
     <!-- End of the main content area. -->
-                    </main>
-                    <script src="login.js" defer></script>
-
+    </main>
+    
+<script src="login.js" defer></script>
 </body>
 </html>
 
