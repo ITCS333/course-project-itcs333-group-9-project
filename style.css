@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Pattaya&family=Story+Script&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Story+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Momo+Trust+Display&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 :root
@@ -8,7 +8,7 @@
   --header-font-weight: 400;
   --header-font-style: normal;
   
-  --title-font-family: "Story Script", sans-serif;
+  --title-font-family:  "Momo Trust Display", sans-serif;
   --title-font-weight: 400;
   --title-font-style: normal;
   
@@ -26,7 +26,7 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  background-color: #f0f0f0;
+  background-color: #e7e7e7;
 }
 
 .header
@@ -69,23 +69,79 @@ h2
   font-family: var(--title-font-family);
   font-weight: var(--title-font-weight);
   font-style: var(--title-font-style);
-  font-size: 2.3rem;
-  letter-spacing: 3px;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--main-background-color);
 }
 
 .list-item
 {
+  list-style: none;
+  margin-top: 15px;
   font-family: var(--subtitle-font-family);
   font-weight: var(--subtitle-font-weight);
   font-style: var(--subtitle-font-style);
+  font-size: 20px;
+  border: 1.5px solid rgb(222, 225, 230);
+  border-left: 3.5px solid #1B3454;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+  position: relative; 
+  overflow: hidden;
+}
+
+.list-item a
+{
   font-size: 1.5rem;
   margin: 1rem;
   list-style-type: none;
   text-decoration: none;
-  color: var(--main-text-color);
-  background-color: var(--secondry-background-color);
-  padding: 1rem;
-  border-radius: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease;
+  color: black;
+  display: block;
+  padding: 10px;
+  margin: 0; 
+  transition: all 0.3s ease-in-out;
+}
+
+.list-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -110%; 
+  width: 50%; 
+  height: 100%;
+  z-index: 10; 
+  
+  background: linear-gradient(
+    to right, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    rgba(255, 255, 255, 0.5) 50%, 
+    rgba(255, 255, 255, 0.1) 100% 
+  );
+  
+  transform: skewX(-20deg); 
+  transition: left 0.5s ease; 
+}
+
+
+.list-item:hover::before {
+  left: 110%; 
+}
+
+.list-item:hover {
+  transform: translateY(-3px); 
+  
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); 
+  
+  background-color: var(--main-background-color); 
+  border-color: var(--main-background-color);  
+  border-radius: 15px;
+}
+
+.list-item:hover a
+{
+background-color: var(--main-background-color);
+color: white; 
+border-radius: 15px;
 }
