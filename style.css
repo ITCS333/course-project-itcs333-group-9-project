@@ -73,19 +73,19 @@ h2
   letter-spacing: 3px;
 }
 
-ul > li
+.list-item
 {
-  list-style: none;
-  margin-top: 15px;
   font-family: var(--subtitle-font-family);
   font-weight: var(--subtitle-font-weight);
   font-style: var(--subtitle-font-style);
-  font-size: 20px;
-}
-
-ul > li > a
-{
+  font-size: 1.5rem;
+  margin: 1rem;
+  list-style-type: none;
   text-decoration: none;
-  color: black;
+  color: var(--main-text-color);
+  background-color: var(--secondry-background-color);
+  padding: 1rem;
+  border-radius: 10px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
 }
-
