@@ -71,8 +71,8 @@ body {
 }
 
 h2 {
-  /* font-size: 1.875rem;
-  font-weight: 700; */
+  font-size: 1.875rem;
+  font-weight: 700;
   color: var(--neutral-900);
   text-align: center;
   margin-bottom: 2rem;
