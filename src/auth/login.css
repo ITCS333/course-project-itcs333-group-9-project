@@ -47,14 +47,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem;
-}
-
 .login-card {
   background: var(--white);
   border-radius: var(--radius-xl);
