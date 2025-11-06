@@ -51,12 +51,13 @@ The project is a GitHub Classroom assignment template. All HTML files contain TO
 
 ### Workflow
 - **Name**: Server
-- **Command**: `python3 -m http.server 5000`
-- **Purpose**: Serves static HTML files on port 5000
+- **Command**: `python3 server.py`
+- **Purpose**: Serves static HTML files on port 5000 with cache-control headers disabled
+- **Note**: Custom server (server.py) prevents browser caching, ensuring CSS/JS changes appear immediately in preview
 
 ### Deployment
 - **Target**: Autoscale (suitable for static websites)
-- **Run Command**: `python3 -m http.server`
+- **Run Command**: `python3 server.py`
 
 ## Development
 This is a learning project where students need to:
