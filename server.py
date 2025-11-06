@@ -9,10 +9,13 @@ class NoCacheHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Expires", "0")
         super().end_headers()
 
+class ReusableTCPServer(socketserver.TCPServer):
+    allow_reuse_address = True
+
 PORT = 5000
 Handler = NoCacheHTTPRequestHandler
 
-with socketserver.TCPServer(("0.0.0.0", PORT), Handler) as httpd:
+with ReusableTCPServer(("0.0.0.0", PORT), Handler) as httpd:
     print(f"Serving HTTP on 0.0.0.0 port {PORT} (http://0.0.0.0:{PORT}/) ...")
     print("Cache-Control headers enabled - CSS changes will update immediately!")
     httpd.serve_forever()
