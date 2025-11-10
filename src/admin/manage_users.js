@@ -191,11 +191,11 @@ function handleTableClick(event) {
  */
 function handleSearch(event) {
   // ... your implementation here ...
-  const searchTerm = searchInput.value.toLowerCase();
-  if (searchTerm ==="") {
+   const searchTerm = searchInput.value.toLowerCase();
+  if (searchTerm === '') {
     renderTable(students);
   } else {
-    const filteredStudents = students.filter(students => student.name.toLowerCase().includes(searchTerm));
+    const filteredStudents = students.filter(student => student.name.toLowerCase().includes(searchTerm));
     renderTable(filteredStudents);
   }
 }
