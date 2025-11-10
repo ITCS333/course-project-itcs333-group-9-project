@@ -195,8 +195,15 @@ function handleSearch(event) {
   if (searchTerm === '') {
     renderTable(students);
   } else {
-    const filteredStudents = students.filter(student => student.name.toLowerCase().includes(searchTerm));
+    const filteredStudents = students.filter(student =>
+      student.name.toLowerCase().includes(searchTerm));
     renderTable(filteredStudents);
+  }
+}
+
+function handleSearchKeydown(event) {
+  if (event.key === 'Enter') {
+    handleSearch(event); // Triggers search on Enter
   }
 }
 
@@ -221,6 +228,7 @@ function handleSort(event) {
   const properties = ['name', 'id', 'email'];
   const property = properties[index];
   if (!property) return;
+
   let direction = th.getAttribute('data-sort-dir') || 'asc';
   direction = direction === 'asc' ? 'desc' : 'asc';
   th.setAttribute('data-sort-dir', direction);
@@ -238,6 +246,7 @@ function handleSort(event) {
       return property === 'id' ? bVal - aVal : bVal.localeCompare(aVal);
     }
   });
+
   renderTable(students);
 }
 
@@ -268,7 +277,7 @@ async function loadStudentsAndInitialize() {
     renderTable(students);
   } catch (error) {
     console.error('Error loading students:', error);
-    // Use dummy data if fetch fails
+    // Fallback: Use dummy data if fetch fails
     students = [
       { name: 'John Doe', id: '12345', email: 'john.doe@example.com' },
       { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' }
@@ -278,7 +287,8 @@ async function loadStudentsAndInitialize() {
     changePasswordForm.addEventListener('submit', handleChangePassword);
   addStudentForm.addEventListener('submit', handleAddStudent);
   studentTableBody.addEventListener('click', handleTableClick);
-  searchInput.addEventListener('input', handleSearch);
+  searchInput.addEventListener('input', handleSearch); // Live search on typing
+  searchInput.addEventListener('keydown', handleSearchKeydown); // Enter key search
   tableHeaders.forEach(th => th.addEventListener('click', handleSort));
 }
 
