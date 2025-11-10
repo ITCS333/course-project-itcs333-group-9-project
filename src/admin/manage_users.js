@@ -191,6 +191,13 @@ function handleTableClick(event) {
  */
 function handleSearch(event) {
   // ... your implementation here ...
+  const searchTerm = searchInput.value.toLowerCase();
+  if (searchTerm ==="") {
+    renderTable(students);
+  } else {
+    const filteredStudents = students.filter(students => student.name.toLowerCase().includes(searchTerm));
+    renderTable(filteredStudents);
+  }
 }
 
 /**
@@ -209,6 +216,29 @@ function handleSearch(event) {
  */
 function handleSort(event) {
   // ... your implementation here ...
+  const th = event.currentTarget;
+  const index = th.cellIndex;
+  const properties = ['name', 'id', 'email'];
+  const property = properties[index];
+  if (!property) return;
+  let direction = th.getAttribute('data-sort-dir') || 'asc';
+  direction = direction === 'asc' ? 'desc' : 'asc';
+  th.setAttribute('data-sort-dir', direction);
+
+  students.sort((a, b) => {
+    let aVal = a[property];
+    let bVal = b[property];
+    if (property === 'id') {
+      aVal = parseInt(aVal, 10);
+      bVal = parseInt(bVal, 10);
+    }
+    if (direction === 'asc') {
+      return property === 'id' ? aVal - bVal : aVal.localeCompare(bVal);
+    } else {
+      return property === 'id' ? bVal - aVal : bVal.localeCompare(aVal);
+    }
+  });
+  renderTable(students);
 }
 
 /**
@@ -229,6 +259,27 @@ function handleSort(event) {
  */
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
+  try {
+    const response = await fetch('students.json');
+    if (!response.ok) {
+      throw new Error('Failed to load students.json');
+    }
+    students = await response.json();
+    renderTable(students);
+  } catch (error) {
+    console.error('Error loading students:', error);
+    // Use dummy data if fetch fails
+    students = [
+      { name: 'John Doe', id: '12345', email: 'john.doe@example.com' },
+      { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' }
+    ];
+    renderTable(students);
+  }
+    changePasswordForm.addEventListener('submit', handleChangePassword);
+  addStudentForm.addEventListener('submit', handleAddStudent);
+  studentTableBody.addEventListener('click', handleTableClick);
+  searchInput.addEventListener('input', handleSearch);
+  tableHeaders.forEach(th => th.addEventListener('click', handleSort));
 }
 
 // --- Initial Page Load ---
