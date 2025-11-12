@@ -13,6 +13,7 @@
 
 // --- Element Selections ---
 // TODO: Select the section for the assignment list ('#assignment-list-section').
+const listSection = document.getElementById('assignment-list-section');
 
 // --- Functions ---
 
@@ -25,6 +26,13 @@
  */
 function createAssignmentArticle(assignment) {
   // ... your implementation here ...
+  const article = document.createElement('article');
+  article.innerHTML = `
+    <h2>${assignment.title}</h2>
+    <p>Due: ${assignment.dueDate}</p>
+    <p>${assignment.description}</p>
+    <a href="details.html?id=${assignment.id}">View Details & Discussion</a>`;
+  return article;
 }
 
 /**
@@ -40,6 +48,30 @@ function createAssignmentArticle(assignment) {
  */
 async function loadAssignments() {
   // ... your implementation here ...
+  try {
+    const response = await fetch('assignments.json');
+    if (!response.ok) {
+      throw new Error('Failed to load assignments.json');
+    }
+    const assignments = await response.json();
+    listSection.innerHTML = '';
+    assignments.forEach(assignment => {
+      const article = createAssignmentArticle(assignment);
+      listSection.appendChild(article);
+    });
+  } catch (error) {
+    console.error('Error loading assignments:', error);
+    const dummyAssignments = [
+      { id: 1, title: 'Assignment 1: HTML Basics', dueDate: '2025-10-15', description: 'This assignment introduces the basics of HTML structure and elements.' },
+      { id: 2, title: 'Assignment 2: CSS Styling', dueDate: '2025-11-05', description: 'Learn to style web pages with CSS for better presentation.' },
+      { id: 3, title: 'Assignment 3: JavaScript Basics', dueDate: '2025-11-15', description: 'Introduction to client-side scripting with JavaScript.' }
+    ];
+    listSection.innerHTML = '';
+    dummyAssignments.forEach(assignment => {
+      const article = createAssignmentArticle(assignment);
+      listSection.appendChild(article);
+    });
+  }
 }
 
 // --- Initial Page Load ---
