@@ -102,20 +102,34 @@ function handleLogin(event) {
   event.preventDefault();
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
-  
+
   if (!isValidEmail(email)) {
     displayMessage("Invalid email format.", "error");
     return;
   }
-  
-  if (!isValidPassword(password)) {
-    displayMessage("Password must be at least 8 characters.", "error");
-    return;
-  }
-  
-  displayMessage("Login successful!", "success");
-  emailInput.value = '';
-  passwordInput.value = '';
+
+  fetch('login.php', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      displayMessage(data.message, "success");
+      setTimeout(() => {
+        window.location.href = 'list.html'; // Or manage_users.html for admin
+      }, 1000);
+    } else {
+      displayMessage(data.message, "error");
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    displayMessage("An error occurred. Please try again.", "error");
+  });
 }
 
 /**
