@@ -112,6 +112,7 @@ function handleAddWeek(event) {
   weeks.push(weekObj);
   renderTable();
   event.target.reset();
+  customAddWeekToDB(weekObj);
 }
 async function customAddWeekToDB(week) {
   const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
@@ -124,7 +125,7 @@ async function customAddWeekToDB(week) {
       title: week.title,
       start_date: week.startDate,
       description: week.description,
-      link: week.link,
+      links: week.links,
     }),
   });
   const data = await response.json();
@@ -145,6 +146,7 @@ function handleTableClick(event) {
   if (event.target.classList.contains("delete-btn")) {
     weeks = weeks.filter((week) => week.id != event.target.dataset.id);
     renderTable();
+    customDeleteWeekFromDB(event.target.dataset.id);
   }
   if (event.target.classList.contains("edit-btn")) {
     // TODO: navigate to the top of the page
@@ -172,6 +174,13 @@ function handleTableClick(event) {
       btn.disabled = true;
     });
   }
+}
+async function customDeleteWeekFromDB(weekId) {
+  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ week_id: weekId }),
+  });
 }
 
 function handleUpdateWeek(event) {
@@ -206,7 +215,30 @@ function handleUpdateWeek(event) {
     console.log(btn);
     btn.disabled = false;
   });
-  event.target.reset();
+  // event.target.reset();
+  customUpdateWeekToDB({
+    id: weekId,
+    title,
+    startDate,
+    description,
+    links: weekLinks,
+  });
+  editingWeekId = null;
+}
+async function customUpdateWeekToDB(week) {
+  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      week_id: week.id,
+      title: week.title,
+      start_date: week.startDate,
+      description: week.description,
+      links: week.links,
+    }),
+  });
 }
 function handleCancelUpdate(event) {
   event.preventDefault();
@@ -237,7 +269,15 @@ async function loadAndInitialize() {
   const { data } = await (
     await fetch("/src/weekly/api/index.php?resource=weeks")
   ).json();
-  weeks = data;
+  weeks = data.map((week) => {
+    return {
+      id: week.id,
+      title: week.title,
+      startDate: week.start_date,
+      description: week.description,
+      links: week.links,
+    };
+  });
   renderTable();
   document
     .getElementById("week-form")

@@ -63,9 +63,18 @@ function createWeekArticle(week) {
 async function loadWeeks() {
   // ... your implementation here ...
   // const weeks = await (await fetch("api/weeks.json")).json();
-  const { data: weeks } = await (
+  const { data } = await (
     await fetch("/src/weekly/api/index.php?resource=weeks")
   ).json();
+  const weeks = data.map((week) => {
+    return {
+      id: week.id,
+      title: week.title,
+      startDate: week.start_date,
+      description: week.description,
+      links: week.links,
+    };
+  });
   weekListSection.innerHTML = "";
   weeks.map((week) => {
     weekListSection.appendChild(createWeekArticle(week));
