@@ -14,6 +14,7 @@
 // --- Global Data Store ---
 // This will hold the weekly data loaded from the JSON file.
 let weeks = [];
+let editingWeekId = null;
 
 // --- Element Selections ---
 // TODO: Select the week form ('#week-form').
@@ -54,6 +55,7 @@ function createWeekRow(week) {
   deleteButton.classList.add("delete-btn", "edit", "action-btn");
 
   deleteButton.dataset.id = week.id;
+  editButton.dataset.id = week.id;
 
   lastTableDataElement.appendChild(editButton);
   lastTableDataElement.appendChild(deleteButton);
@@ -101,7 +103,7 @@ function handleAddWeek(event) {
   const weekLinks = document.getElementById("week-links").value.split("\n");
   console.log(weekLinks);
   const weekObj = {
-    id: `week_${Date.now()}`,
+    id: Math.floor(Math.random() * 4294967295 + 1),
     title,
     startDate,
     description,
@@ -110,6 +112,22 @@ function handleAddWeek(event) {
   weeks.push(weekObj);
   renderTable();
   event.target.reset();
+}
+async function customAddWeekToDB(week) {
+  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      week_id: week.id,
+      title: week.title,
+      start_date: week.startDate,
+      description: week.description,
+      link: week.link,
+    }),
+  });
+  const data = await response.json();
 }
 
 /**
@@ -128,6 +146,79 @@ function handleTableClick(event) {
     weeks = weeks.filter((week) => week.id != event.target.dataset.id);
     renderTable();
   }
+  if (event.target.classList.contains("edit-btn")) {
+    // TODO: navigate to the top of the page
+    window.scrollTo({ top: 80, behavior: "smooth" });
+    editingWeekId = event.target.dataset.id;
+    document.querySelector(".add-week-btn").classList.add("hide-btn");
+    document.querySelector(".update-week-btn").classList.remove("hide-btn");
+    document.querySelector(".cancel-update-btn").classList.remove("hide-btn");
+    document.getElementById("week-title").value = weeks.filter(
+      (week) => week.id == event.target.dataset.id
+    )[0].title;
+    document.getElementById("week-start-date").value = weeks.filter(
+      (week) => week.id == event.target.dataset.id
+    )[0].startDate;
+    document.getElementById("week-description").value = weeks.filter(
+      (week) => week.id == event.target.dataset.id
+    )[0].description;
+    document.getElementById("week-links").value = weeks
+      .filter((week) => week.id == event.target.dataset.id)[0]
+      .links.join("\n");
+    // weeks = weeks.filter((week) => week.id != event.target.dataset.id);
+    renderTable();
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      console.log(btn);
+      btn.disabled = true;
+    });
+  }
+}
+
+function handleUpdateWeek(event) {
+  event.preventDefault();
+
+  const title = document.getElementById("week-title").value;
+  const startDate = document.getElementById("week-start-date").value;
+  const description = document.getElementById("week-description").value;
+  const weekLinks = document.getElementById("week-links").value.split("\n");
+  const weekId = editingWeekId;
+  const newWeekObj = weeks.map((week, index) => {
+    if (week.id == weekId) {
+      return {
+        id: weekId,
+        title,
+        startDate,
+        description,
+        links: weekLinks,
+      };
+    } else {
+      return week;
+    }
+  });
+  weeks = newWeekObj;
+  editingWeekId = null;
+  weekForm.reset();
+  document.querySelector(".add-week-btn").classList.remove("hide-btn");
+  document.querySelector(".update-week-btn").classList.add("hide-btn");
+  document.querySelector(".cancel-update-btn").classList.add("hide-btn");
+  renderTable();
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    console.log(btn);
+    btn.disabled = false;
+  });
+  event.target.reset();
+}
+function handleCancelUpdate(event) {
+  event.preventDefault();
+  editingWeekId = null;
+  weekForm.reset();
+  document.querySelector(".add-week-btn").classList.remove("hide-btn");
+  document.querySelector(".update-week-btn").classList.add("hide-btn");
+  document.querySelector(".cancel-update-btn").classList.add("hide-btn");
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    console.log(btn);
+    btn.disabled = false;
+  });
 }
 
 /**
@@ -142,7 +233,10 @@ function handleTableClick(event) {
  */
 async function loadAndInitialize() {
   // ... your implementation here ...
-  const data = await (await fetch("api/weeks.json")).json();
+  // const data = await (await fetch("api/weeks.json")).json();
+  const { data } = await (
+    await fetch("/src/weekly/api/index.php?resource=weeks")
+  ).json();
   weeks = data;
   renderTable();
   document
@@ -151,6 +245,12 @@ async function loadAndInitialize() {
   document
     .getElementById("weeks-tbody")
     .addEventListener("click", handleTableClick);
+  document
+    .getElementById("update-week")
+    .addEventListener("click", handleUpdateWeek);
+  document
+    .getElementById("cancel-update")
+    .addEventListener("click", handleCancelUpdate);
 }
 
 // --- Initial Page Load ---

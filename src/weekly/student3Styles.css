@@ -301,7 +301,58 @@ section:hover {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
+.cancel-update-btn {
+  margin-top: 2rem;
+  background: var(--danger-500);
+  color: var(--white);
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+}
 
+.cancel-update-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.cancel-update-btn:hover {
+  background: var(--danger-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+.cancel-update-btn:hover::before {
+  left: 100%;
+}
+
+.cancel-update-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.hide-btn {
+  display: none;
+}
 /* ===============================
    Professional Table Design
    =============================== */

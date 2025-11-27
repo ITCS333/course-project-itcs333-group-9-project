@@ -46,6 +46,7 @@ function getWeekIdFromURL() {
   const queryString = window.location.search;
   // console.log(queryString);
   const id = new URLSearchParams(queryString).get("id");
+  currentWeekId = id;
   return id;
 }
 
@@ -144,6 +145,18 @@ function handleAddComment(event) {
   currentComments.push(commentObj);
   renderComments();
   event.target.reset();
+  customAddCommentToDB(commentObj);
+}
+async function customAddCommentToDB(comment) {
+  const response = await fetch(`/src/weekly/api/index.php?resource=comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      week_id: currentWeekId,
+      author: comment.author,
+      text: comment.text,
+    }),
+  });
 }
 
 /**
@@ -163,6 +176,7 @@ function handleAddComment(event) {
  * - Add the 'submit' event listener to `commentForm` (calls `handleAddComment`).
  * 8. If the week is not found, display an error in `weekTitle`.
  */
+
 async function initializePage() {
   // ... your implementation here ...
   const weekId = getWeekIdFromURL();
@@ -171,17 +185,33 @@ async function initializePage() {
     weekTitle.innerText = "Week not found.";
     return;
   }
-
-  const weeks = await (await fetch("api/weeks.json")).json();
-  const weekComments = await (await fetch("api/comments.json")).json();
-  const week = weeks.filter((week) => week.id == weekId)[0];
+  // const test= await (await fetch("/src/weekly/api/index.php?resource=weeks&week_id=1")).json();
+  // console.log(test)
+  // const weeks = await (await fetch("api/weeks.json")).json();
+  // const weekComments = await (await fetch("api/comments.json")).json();
+  const { data: comments } = await (
+    await fetch(`/src/weekly/api/index.php?resource=comments&week_id=${weekId}`)
+  ).json();
+  console.log(comments);
+  // const week = weeks.filter((week) => week.id == weekId)[0];
+  const { data } = await (
+    await fetch(`/src/weekly/api/index.php?resource=weeks&week_id=${weekId}`)
+  ).json();
+  const week = {
+    id: data.id,
+    title: data.title,
+    startDate: data.start_date,
+    description: data.description,
+    links: data.links,
+  };
+  console.log(week);
 
   if (week == null) {
     weekTitle.innerText = "Error: This week does not exist";
     return;
   }
 
-  const comments = weekComments[weekId];
+  // const comments = weekComments[weekId];
   currentComments.push(...comments);
 
   renderWeekDetails(week);
