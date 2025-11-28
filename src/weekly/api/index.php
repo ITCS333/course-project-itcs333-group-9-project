@@ -613,7 +613,7 @@ function deleteComment($db, $commentId) {
     // TODO: Check if comment exists
     // Prepare and execute a SELECT query
     // If not found, return error response with 404 status
-    $checkQuery = "SELECT id FROM comments WHERE id = ?";
+    $checkQuery = "SELECT id FROM comments_week WHERE id = ?";
     $checkStmt = $db->prepare($checkQuery);
     $checkStmt->bindParam(1, $commentId);
     $checkStmt->execute();
@@ -624,7 +624,7 @@ function deleteComment($db, $commentId) {
     
     // TODO: Prepare DELETE query
     // DELETE FROM comments WHERE id = ?
-    $deleteQuery = "DELETE FROM comments WHERE id = ?";
+    $deleteQuery = "DELETE FROM comments_week WHERE id = ?";
     $deleteStmt = $db->prepare($deleteQuery);
 
     

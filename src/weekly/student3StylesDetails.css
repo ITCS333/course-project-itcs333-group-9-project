@@ -12,6 +12,8 @@
 
   --success-500: #10b981;
   --success-600: #059669;
+  --danger-500: #ef4444;
+  --danger-600: #dc2626;
   --indigo-500: #6366f1;
   --indigo-600: #4f46e5;
   --purple-500: #a855f7;
@@ -351,6 +353,7 @@
 .comment-footer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   font-size: 0.8125rem;
   color: var(--neutral-500);
@@ -359,27 +362,77 @@
   letter-spacing: 0.05em;
 }
 
-.comment-footer::before {
+.comment-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.comment-author::before {
   content: "👤";
   font-size: 1rem;
+}
+
+/* Delete Button for Comments */
+.delete-comment-btn {
+  background: var(--danger-500);
+  color: var(--white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.75rem;
+  transition: all var(--transition-base);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.delete-comment-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.delete-comment-btn:hover {
+  background: var(--danger-600);
+  box-shadow: var(--shadow-md);
+}
+
+.delete-comment-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.delete-comment-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-xs);
+}
+
+.delete-comment-btn:focus-visible {
+  outline: 2px solid var(--danger-500);
+  outline-offset: 2px;
 }
 
 /* ===============================
    Comment Form
    =============================== */
 .comment-form {
-  /* background: linear-gradient(180deg, var(--neutral-50) 0%, var(--white) 100%); */
-  /* border: 1.5px solid var(--neutral-200); */
   border-radius: var(--radius-lg);
   padding: 0;
   margin-top: 2rem;
   transition: all var(--transition-base);
 }
-/* 
-.comment-form:focus-within {
-  border-color: var(--primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-} */
 
 .comment-fieldset {
   border: 1.5px solid var(--neutral-200);
@@ -415,7 +468,6 @@
   font-family: inherit;
   background: var(--white);
   color: var(--neutral-900);
-  /* transition: all var(--transition-base); */
   box-shadow: var(--shadow-xs);
   resize: vertical;
   min-height: 120px;
@@ -536,6 +588,16 @@
   .comment-fieldset {
     padding: 1.5rem;
   }
+
+  .comment-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .delete-comment-btn {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -580,6 +642,16 @@
   .comment-submit-btn {
     width: 100%;
   }
+
+  .comment-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .delete-comment-btn {
+    width: 100%;
+  }
 }
 
 /* ===============================
@@ -617,7 +689,8 @@
     page-break-inside: avoid;
   }
 
-  .comment-form {
+  .comment-form,
+  .delete-comment-btn {
     display: none;
   }
 }

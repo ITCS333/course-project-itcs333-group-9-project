@@ -8,7 +8,7 @@
   <head>
     <!-- TODO: Add meta tags for charset and viewport. -->
     <meta charset="UTF-8" />
-    <meta name="viewport" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- TODO: Add a title, for now use "Week Details". -->
     <title>Week Details</title>
     <!-- TODO: Link to your CSS framework or stylesheet. -->
@@ -68,7 +68,10 @@
               I have a question about the 'header' tag.
             </p>
             <!-- TODO: Use a 'footer' to show the author (e.g., "Posted by: John Doe"). -->
-            <footer class="comment-footer">Posted by: John Doe</footer>
+            <footer class="comment-footer">
+              <span class="comment-author">Posted by: John Doe</span>
+              <button class="delete-comment-btn">Delete</button>
+            </footer>
             <!-- End of comment article. -->
           </article>
         </div>

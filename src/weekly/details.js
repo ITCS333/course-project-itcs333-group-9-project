@@ -98,7 +98,14 @@ function createCommentArticle(comment) {
 
   const articleFooter = document.createElement("footer");
   articleFooter.classList.add("comment-footer");
-  articleFooter.innerText = comment.author;
+  const spanAuthor = document.createElement("span");
+  spanAuthor.classList.add("comment-author");
+  spanAuthor.innerText = `Posted by: ${comment.author}`;
+  const deleteButton = document.createElement("button");
+  deleteButton.classList.add("delete-comment-btn");
+  deleteButton.innerText = "Delete";
+  articleFooter.appendChild(spanAuthor);
+  articleFooter.appendChild(deleteButton);
   commentArticle.appendChild(articleComment);
   commentArticle.appendChild(articleFooter);
   return commentArticle;
@@ -157,6 +164,29 @@ async function customAddCommentToDB(comment) {
       text: comment.text,
     }),
   });
+}
+
+function handleDeleteComment(event) {
+  const commentCard = event.target.closest(".comment-card");
+  const commentText = commentCard.querySelector(".comment-text").innerText;
+  const commentIndex = currentComments.findIndex(
+    (comment) => comment.text === commentText
+  );
+  if (commentIndex !== -1) {
+    customDeleteCommentFromDB(currentComments[commentIndex].id);
+    currentComments.splice(commentIndex, 1);
+    renderComments();
+  }
+}
+async function customDeleteCommentFromDB(commentId) {
+  const response = await fetch(
+    `/src/weekly/api/index.php?resource=comments&id=${commentId}`,
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: commentId }),
+    }
+  );
 }
 
 /**
@@ -219,6 +249,9 @@ async function initializePage() {
   document
     .getElementById("comment-form")
     .addEventListener("submit", handleAddComment);
+  document.querySelectorAll(".delete-comment-btn").forEach((button) => {
+    button.addEventListener("click", handleDeleteComment);
+  });
 }
 
 // --- Initial Page Load ---

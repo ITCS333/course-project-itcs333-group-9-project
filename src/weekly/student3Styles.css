@@ -76,7 +76,7 @@
   background: var(--white);
   border-bottom: 1px solid var(--neutral-200);
   box-shadow: var(--shadow-sm);
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 1rem;
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -86,7 +86,7 @@
 
 .header-title {
   margin: 0;
-  font-size: 1.875rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--neutral-900);
   letter-spacing: -0.025em;
@@ -102,7 +102,7 @@
   left: 50%;
   transform: translateX(-50%);
   bottom: -8px;
-  width: 80px;
+  width: 60px;
   height: 3px;
   background: linear-gradient(90deg, var(--primary-600), var(--primary-500));
   border-radius: 2px;
@@ -113,8 +113,8 @@
    =============================== */
 .main-content {
   max-width: 1200px;
-  margin: 3rem auto;
-  padding: 0 2rem;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -134,9 +134,9 @@
    =============================== */
 section {
   background: var(--white);
-  border-radius: var(--radius-xl);
-  padding: 2.5rem;
-  margin-bottom: 2rem;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--neutral-200);
   transition: box-shadow var(--transition-slow);
@@ -150,22 +150,22 @@ section:hover {
    Section Headings
    =============================== */
 .section-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--neutral-900);
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
   border-bottom: 2px solid var(--neutral-100);
   letter-spacing: -0.025em;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
 .section-title::before {
   content: "";
   width: 4px;
-  height: 32px;
+  height: 24px;
   background: linear-gradient(180deg, var(--primary-600), var(--primary-500));
   border-radius: 2px;
 }
@@ -181,8 +181,7 @@ section:hover {
 .week-fieldset {
   border: 1px solid var(--neutral-200);
   border-radius: var(--radius-lg);
-  padding: 2rem;
-  /* background: linear-gradient(180deg, var(--neutral-50) 0%, var(--white) 100%); */
+  padding: 1.5rem;
   transition: all var(--transition-base);
 }
 
@@ -193,20 +192,20 @@ section:hover {
 
 .week-legend {
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--neutral-900);
-  padding: 0 1rem;
+  padding: 0 0.75rem;
   background: var(--white);
   letter-spacing: -0.015em;
 }
 
 .week-label {
   display: block;
-  margin-top: 1.5rem;
+  margin-top: 1.25rem;
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: var(--neutral-700);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -214,14 +213,13 @@ section:hover {
 .week-input,
 .week-textarea {
   width: 100%;
-  padding: 0.875rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1.5px solid var(--neutral-300);
   border-radius: var(--radius-md);
   font-size: 0.9375rem;
   font-family: inherit;
   background: var(--white);
   color: var(--neutral-900);
-  /* transition: all var(--transition-base); */
   box-shadow: var(--shadow-xs);
 }
 
@@ -245,7 +243,7 @@ section:hover {
 
 .week-textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 100px;
   line-height: 1.6;
   font-family: inherit;
 }
@@ -254,21 +252,22 @@ section:hover {
    Premium Button Design
    =============================== */
 .add-week-btn {
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   background: var(--primary-600);
   color: var(--white);
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   transition: all var(--transition-base);
   box-shadow: var(--shadow-md);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .add-week-btn::before {
@@ -301,22 +300,24 @@ section:hover {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
 }
+
 .cancel-update-btn {
-  margin-top: 2rem;
+  margin-top: 1rem;
   background: var(--danger-500);
   color: var(--white);
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.875rem 1.5rem;
   border-radius: var(--radius-md);
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   transition: all var(--transition-base);
   box-shadow: var(--shadow-md);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .cancel-update-btn::before {
@@ -353,6 +354,7 @@ section:hover {
 .hide-btn {
   display: none;
 }
+
 /* ===============================
    Professional Table Design
    =============================== */
@@ -364,6 +366,8 @@ section:hover {
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .weeks-thead {
@@ -375,24 +379,25 @@ section:hover {
 }
 
 .weeks-th {
-  padding: 2rem 1.5rem;
+  padding: 1rem 1rem;
   text-align: left;
   font-weight: 700;
-  font-size: 0.75rem;
-  /* color: var(--white); */
+  font-size: 0.6875rem;
+  color: var(--black);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border: none;
+  white-space: nowrap;
 }
 
 .weeks-td {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1rem;
   border-bottom: 1px solid var(--neutral-200);
   color: var(--neutral-700);
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   background: var(--white);
-  /* background-color: red; */
-  /* width: "100%"; */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .weeks-row {
@@ -411,27 +416,30 @@ section:hover {
 .weeks-row:last-child .weeks-td {
   border-bottom: none;
 }
+
 .desc {
-  max-width: 500px;
+  max-width: 100%;
 }
 
 /* ===============================
    Premium Action Buttons
    =============================== */
 .action-btn {
-  margin-right: 0.5rem;
-  padding: 0.5rem 1rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+  padding: 0.5rem 0.875rem;
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   transition: all var(--transition-base);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   box-shadow: var(--shadow-sm);
   position: relative;
   overflow: hidden;
+  display: inline-block;
 }
 
 .action-btn::before {
@@ -442,7 +450,6 @@ section:hover {
   width: 0;
   height: 0;
   border-radius: 50%;
-  /* background: rgba(255, 255, 255, 0.3); */
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
@@ -460,8 +467,6 @@ section:hover {
 
 .action-btn.edit:hover {
   background: var(--warning-600);
-  /* transform: translateY(-1px); */
-  /* box-shadow: var(--shadow-md); */
 }
 
 .action-btn.delete {
@@ -472,8 +477,6 @@ section:hover {
 
 .action-btn.delete:hover {
   background: var(--danger-600);
-  /* transform: translateY(-1px); */
-  /* box-shadow: var(--shadow-md); */
 }
 
 .action-btn:active {
@@ -482,5 +485,150 @@ section:hover {
 }
 
 /* ===============================
-   Professional Responsive Design
+   Responsive Design - Tablet
    =============================== */
+@media (min-width: 768px) {
+  .header-container {
+    padding: 1.75rem 2rem;
+  }
+
+  .header-title {
+    font-size: 1.875rem;
+  }
+
+  .header-title::before {
+    width: 80px;
+  }
+
+  .main-content {
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+  }
+
+  section {
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    gap: 0.75rem;
+  }
+
+  .section-title::before {
+    height: 32px;
+  }
+
+  .week-fieldset {
+    padding: 2rem;
+  }
+
+  .week-legend {
+    font-size: 1.125rem;
+    padding: 0 1rem;
+  }
+
+  .week-label {
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  .week-input,
+  .week-textarea {
+    padding: 0.875rem 1rem;
+  }
+
+  .week-textarea {
+    min-height: 120px;
+  }
+
+  .add-week-btn,
+  .cancel-update-btn {
+    width: auto;
+    padding: 1rem 2rem;
+    font-size: 0.9375rem;
+  }
+
+  .add-week-btn {
+    margin-top: 2rem;
+  }
+
+  .cancel-update-btn {
+    margin-top: 1rem;
+  }
+
+  .weeks-th {
+    padding: 1.5rem 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  .weeks-td {
+    padding: 1.25rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .action-btn {
+    margin-right: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ===============================
+   Responsive Design - Desktop
+   =============================== */
+@media (min-width: 1024px) {
+  .main-content {
+    margin: 3rem auto;
+    padding: 0 2rem;
+  }
+
+  section {
+    padding: 2.5rem;
+  }
+
+  .weeks-th {
+    padding: 2rem 1.5rem;
+  }
+
+  .weeks-td {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .desc {
+    max-width: 500px;
+  }
+}
+
+/* ===============================
+   Responsive Design - Mobile Only
+   =============================== */
+@media (max-width: 767px) {
+  /* Stack action buttons on small screens */
+  .weeks-td .action-btn {
+    display: block;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .weeks-td .action-btn:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Improve table readability on mobile */
+  .weeks-table {
+    font-size: 0.8125rem;
+  }
+
+  /* Better touch targets */
+  .week-input,
+  .week-textarea,
+  .add-week-btn,
+  .cancel-update-btn,
+  .action-btn {
+    min-height: 44px;
+  }
+}
