@@ -155,15 +155,26 @@ function handleAddComment(event) {
   customAddCommentToDB(commentObj);
 }
 async function customAddCommentToDB(comment) {
-  const response = await fetch(`/src/weekly/api/index.php?resource=comments`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      week_id: currentWeekId,
-      author: comment.author,
-      text: comment.text,
-    }),
-  });
+  try {
+    const response = await fetch(
+      `/src/weekly/api/index.php?resource=comments`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          week_id: currentWeekId,
+          author: comment.author,
+          text: comment.text,
+        }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    currentComments[currentComments.length - 1] = (await response.json()).data;
+  } catch (err) {
+    console.log("Error adding comment to DB:", err);
+  }
 }
 
 function handleDeleteComment(event) {
@@ -179,14 +190,21 @@ function handleDeleteComment(event) {
   }
 }
 async function customDeleteCommentFromDB(commentId) {
-  const response = await fetch(
-    `/src/weekly/api/index.php?resource=comments&id=${commentId}`,
-    {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: commentId }),
+  try {
+    const response = await fetch(
+      `/src/weekly/api/index.php?resource=comments&id=${commentId}`,
+      {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: commentId }),
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
-  );
+  } catch (err) {
+    console.log("Error deleting comment from DB:", err);
+  }
 }
 
 /**
@@ -219,23 +237,35 @@ async function initializePage() {
   // console.log(test)
   // const weeks = await (await fetch("api/weeks.json")).json();
   // const weekComments = await (await fetch("api/comments.json")).json();
-  const { data: comments } = await (
-    await fetch(`/src/weekly/api/index.php?resource=comments&week_id=${weekId}`)
-  ).json();
-  console.log(comments);
-  // const week = weeks.filter((week) => week.id == weekId)[0];
-  const { data } = await (
-    await fetch(`/src/weekly/api/index.php?resource=weeks&week_id=${weekId}`)
-  ).json();
-  const week = {
-    id: data.id,
-    title: data.title,
-    startDate: data.start_date,
-    description: data.description,
-    links: data.links,
-  };
-  console.log(week);
-
+  let week = null;
+  let comments = [];
+  try {
+    const { data: commentsDb } = await (
+      await fetch(
+        `/src/weekly/api/index.php?resource=comments&week_id=${weekId}`
+      )
+    ).json();
+    comments = commentsDb;
+    console.log(comments);
+    // const week = weeks.filter((week) => week.id == weekId)[0];
+    const { data } = await (
+      await fetch(`/src/weekly/api/index.php?resource=weeks&week_id=${weekId}`)
+    ).json();
+    week = {
+      id: data.id,
+      title: data.title,
+      startDate: data.start_date,
+      description: data.description,
+      links: data.links,
+    };
+    console.log(week);
+  } catch (err) {
+    console.log("Error fetching week or comments from API:", err);
+    const weeks = await (await fetch("api/weeks.json")).json();
+    const weekComments = await (await fetch("api/comments.json")).json();
+    week = weeks.filter((week) => week.id == weekId)[0];
+    comments = weekComments[weekId];
+  }
   if (week == null) {
     weekTitle.innerText = "Error: This week does not exist";
     return;
@@ -249,8 +279,10 @@ async function initializePage() {
   document
     .getElementById("comment-form")
     .addEventListener("submit", handleAddComment);
-  document.querySelectorAll(".delete-comment-btn").forEach((button) => {
-    button.addEventListener("click", handleDeleteComment);
+  commentsDiv.addEventListener("click", function (event) {
+    if (event.target && event.target.classList.contains("delete-comment-btn")) {
+      handleDeleteComment(event);
+    }
   });
 }
 

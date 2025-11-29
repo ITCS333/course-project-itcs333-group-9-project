@@ -63,18 +63,29 @@ function createWeekArticle(week) {
 async function loadWeeks() {
   // ... your implementation here ...
   // const weeks = await (await fetch("api/weeks.json")).json();
-  const { data } = await (
-    await fetch("/src/weekly/api/index.php?resource=weeks")
-  ).json();
-  const weeks = data.map((week) => {
-    return {
-      id: week.id,
-      title: week.title,
-      startDate: week.start_date,
-      description: week.description,
-      links: week.links,
-    };
-  });
+  let weeks = [];
+  try {
+    const { data } = await (
+      await fetch("/src/weekly/api/index.php?resource=weeks")
+    ).json();
+
+    weeks = data.map((week) => {
+      return {
+        id: week.id,
+        title: week.title,
+        startDate: week.start_date,
+        description: week.description,
+        links: week.links,
+      };
+    });
+  } catch (err) {
+    console.log(
+      "Error fetching weeks from API, falling back to local JSON:",
+      err
+    );
+    weeks = await (await fetch("api/weeks.json")).json();
+  }
+  console.log(weeks);
   weekListSection.innerHTML = "";
   weeks.map((week) => {
     weekListSection.appendChild(createWeekArticle(week));

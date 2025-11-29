@@ -115,20 +115,26 @@ function handleAddWeek(event) {
   customAddWeekToDB(weekObj);
 }
 async function customAddWeekToDB(week) {
-  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      week_id: week.id,
-      title: week.title,
-      start_date: week.startDate,
-      description: week.description,
-      links: week.links,
-    }),
-  });
-  const data = await response.json();
+  try {
+    const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        week_id: week.id,
+        title: week.title,
+        start_date: week.startDate,
+        description: week.description,
+        links: week.links,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (err) {
+    console.log("Error adding week to DB:", err);
+  }
 }
 
 /**
@@ -176,11 +182,18 @@ function handleTableClick(event) {
   }
 }
 async function customDeleteWeekFromDB(weekId) {
-  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ week_id: weekId }),
-  });
+  try {
+    const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ week_id: weekId }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (err) {
+    console.log("Error deleting week from DB:", err);
+  }
 }
 
 function handleUpdateWeek(event) {
@@ -216,6 +229,7 @@ function handleUpdateWeek(event) {
     btn.disabled = false;
   });
   // event.target.reset();
+
   customUpdateWeekToDB({
     id: weekId,
     title,
@@ -223,22 +237,30 @@ function handleUpdateWeek(event) {
     description,
     links: weekLinks,
   });
+
   editingWeekId = null;
 }
 async function customUpdateWeekToDB(week) {
-  const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      week_id: week.id,
-      title: week.title,
-      start_date: week.startDate,
-      description: week.description,
-      links: week.links,
-    }),
-  });
+  try {
+    const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        week_id: week.id,
+        title: week.title,
+        start_date: week.startDate,
+        description: week.description,
+        links: week.links,
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  } catch (err) {
+    console.log("Error updating week in DB:", err);
+  }
 }
 function handleCancelUpdate(event) {
   event.preventDefault();
@@ -266,18 +288,23 @@ function handleCancelUpdate(event) {
 async function loadAndInitialize() {
   // ... your implementation here ...
   // const data = await (await fetch("api/weeks.json")).json();
-  const { data } = await (
-    await fetch("/src/weekly/api/index.php?resource=weeks")
-  ).json();
-  weeks = data.map((week) => {
-    return {
-      id: week.id,
-      title: week.title,
-      startDate: week.start_date,
-      description: week.description,
-      links: week.links,
-    };
-  });
+  try {
+    const { data } = await (
+      await fetch("/src/weekly/api/index.php?resource=weeks")
+    ).json();
+    weeks = data.map((week) => {
+      return {
+        id: week.id,
+        title: week.title,
+        startDate: week.start_date,
+        description: week.description,
+        links: week.links,
+      };
+    });
+  } catch (err) {
+    console.log("Error fetching weeks:", err);
+    weeks = await (await fetch("api/weeks.json")).json();
+  }
   renderTable();
   document
     .getElementById("week-form")
