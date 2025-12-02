@@ -203,6 +203,11 @@ function handleUpdateWeek(event) {
   const startDate = document.getElementById("week-start-date").value;
   const description = document.getElementById("week-description").value;
   const weekLinks = document.getElementById("week-links").value.split("\n");
+  if (title.trim() === "" || startDate.trim() === "") {
+    alert("Title and Start Date are required.");
+    return;
+  }
+
   const weekId = editingWeekId;
   const newWeekObj = weeks.map((week, index) => {
     if (week.id == weekId) {
