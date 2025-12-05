@@ -9,10 +9,12 @@ Mohammed Ali Rady 202304896
 Sayed Alyas A.Khaleq Saeed 202307072
 
 ## A table indicating which student was responsible for which task.
-Academic ID | Student Name | Task Assigned |
-202307169 | Moayed Ali Ebrahim Mubarak | Task 01 |
-202304896 | Mohammed Aly Rady Hassanain | Task 02 |
-202307072 | Sayed Alyas Khaleq Saeed Mohamed | Task 03 |
-202302877 | Ali Hasan Ali Kadhem | Task 04 |
+
+| Academic ID | Student Name | Task Assigned |
+| :--- | :--- | :--- |
+| 202307169 | Moayed Ali Ebrahim Mubarak | Task 01 |
+| 202304896 | Mohammed Aly Rady Hassanain | Task 02 |
+| 202307072 | Sayed Alyas Khaleq Saeed Mohamed | Task 03 |
+| 202302877 | Ali Hasan Ali Kadhem | Task 04 |
 
 ## A link to your live, hosted application on Replit.
