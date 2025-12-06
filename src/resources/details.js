@@ -28,12 +28,13 @@ function renderResourceDetails(resource) {
 // Create a single <article> for a comment
 function createCommentArticle(comment) {
   const article = document.createElement("article");
+  article.classList.add("comment");
 
   const p = document.createElement("p");
   p.textContent = comment.text;
 
   const footer = document.createElement("footer");
-  footer.textContent = `Posted by ${comment.author}`;
+  footer.textContent = `Posted by: ${comment.author}`;
 
   article.appendChild(p);
   article.appendChild(footer);
@@ -44,10 +45,8 @@ function createCommentArticle(comment) {
 // Render all comments
 function renderComments() {
   commentList.innerHTML = "";
-
-  currentComments.forEach((comment) => {
-    const article = createCommentArticle(comment);
-    commentList.appendChild(article);
+  currentComments.forEach(comment => {
+    commentList.appendChild(createCommentArticle(comment));
   });
 }
 
@@ -79,8 +78,8 @@ async function initializePage() {
 
   try {
     const [resourcesRes, commentsRes] = await Promise.all([
-      fetch("resources.json"),
-      fetch("comments.json")
+      fetch("./api/resources.json"),
+      fetch("./api/comments.json")
     ]);
 
     const resources = await resourcesRes.json();
@@ -108,3 +107,5 @@ async function initializePage() {
 
 // --- Initial Page Load ---
 initializePage();
+
+

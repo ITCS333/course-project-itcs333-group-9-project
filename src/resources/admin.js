@@ -1,25 +1,10 @@
 /*
   Requirement: Make the "Manage Resources" page interactive.
-
-  Instructions:
-  1. Link this file to `admin.html` using:
-     <script src="admin.js" defer></script>
-  
-  2. In `admin.html`, add an `id="resources-tbody"` to the <tbody> element
-     inside your `resources-table`.
-  
-  3. Implement the TODOs below.
 */
-
-// --- Global Data Store ---
 let resources = [];
-
-// --- Element Selections ---
+let editingResourceId = null;
 const resourceForm = document.querySelector('#resource-form');
 const resourcesTableBody = document.querySelector('#resources-tbody');
-
-// --- Functions ---
-
 function createResourceRow(resource) {
   const tr = document.createElement('tr');
 
@@ -66,17 +51,27 @@ function handleAddResource(event) {
   const description = document.querySelector('#resource-description').value.trim();
   const link = document.querySelector('#resource-link').value.trim();
 
-  const newResource = {
-    id: `res_${Date.now()}`,
-    title,
-    description,
-    link
-  };
+  if (editingResourceId !== null) {
+    const item = resources.find(r => r.id === editingResourceId);
+    item.title = title;
+    item.description = description;
+    item.link = link;
+  } else {
+    const newResource = {
+      id: `res_${Date.now()}`,
+      title,
+      description,
+      link
+    };
+    resources.push(newResource);
+  }
 
-  resources.push(newResource);
+  editingResourceId = null;
   renderTable();
   resourceForm.reset();
 }
+
+ 
 
 function handleTableClick(event) {
   if (event.target.classList.contains('delete-btn')) {
@@ -84,10 +79,21 @@ function handleTableClick(event) {
     resources = resources.filter(resource => resource.id !== id);
     renderTable();
   }
+
+  if (event.target.classList.contains('edit-btn')) {
+    const id = event.target.dataset.id;
+    const item = resources.find(r => r.id === id);
+
+    document.querySelector('#resource-title').value = item.title;
+    document.querySelector('#resource-description').value = item.description;
+    document.querySelector('#resource-link').value = item.link;
+
+    editingResourceId = id;
+  }
 }
 
 async function loadAndInitialize() {
-  const response = await fetch('resources.json');
+  const response = await fetch('./api/resources.json');
   const data = await response.json();
   resources = data;
 
@@ -96,6 +102,6 @@ async function loadAndInitialize() {
   resourcesTableBody.addEventListener('click', handleTableClick);
 }
 
-// --- Initial Page Load ---
 loadAndInitialize();
+
 
