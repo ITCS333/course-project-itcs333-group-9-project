@@ -131,13 +131,13 @@ function renderComments() {
 function handleAddComment(event) {
   // ... your implementation here ...
   event.preventDefault();
-  let commentText = newCommentText.value.trim();
+  const commentText = newCommentText.value.trim();
 
   if (commentText === "") {
     return;
   }
 
-  let newComment =
+  const newComment =
   {
     author: "Student",
     text: commentText
@@ -172,7 +172,7 @@ async function initializePage() {
 
     if (!currentAssignmentId)
     {
-      console.error("No assignment ID found in URL.");
+      assignmentTitle.textContent = "No assignment ID found in URL.";
       return;
     }
 
@@ -184,7 +184,7 @@ async function initializePage() {
     const assignmentsData = await assignmentsResponse.json();
     const commentsData = await commentsResponse.json();
 
-    const assignment = assignmentsData.find(a => a.id === currentAssignmentId);
+    const assignment = assignmentsData.find(a => a.id === String(currentAssignmentId));
     currentComments = commentsData[currentAssignmentId] || [];
     
     if (assignment)
@@ -195,12 +195,12 @@ async function initializePage() {
     }
     else
     {
-      console.error("Assignment not found for ID:", currentAssignmentId);
+      assignmentTitle.textContent = "Assignment not found for ID:" + currentAssignmentId;
     }
   }
   catch (error)
   {
-    console.error("Error initializing page:", error);
+    assignmentTitle.textContent = "Error initializing page:" + error;
   }
 }
 
