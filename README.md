@@ -13,10 +13,10 @@
 
 | Academic ID | Student Name | Task Assigned |
 | :--- | :--- | :--- |
-| 202302877 | Ali Hasan Ali Kadhem | Task 04 |
+| 202302877 | Ali Hasan Ali Kadhem | Task 01 |
 | 202304896 | Mohammed Aly Rady Hassanain | Task 02 |
 | 202307072 | Sayed Alyas Khaleq Saeed Mohamed | Task 03 |
-| 202307169 | Moayed Ali Ebrahim Mubarak | Task 01 |
+| 202307169 | Moayed Ali Ebrahim Mubarak | Task 04 |
 
 ## A link to your live, hosted application on Replit.
 https://replit.com/@MoayedM35/course-project-itcs333-group-9-project-sec02
