@@ -68,8 +68,10 @@ function renderAssignmentDetails(assignment) {
 
     const li = document.createElement("li");
     const a = document.createElement("a");
-    a.href = file.url;
-    a.textContent = file.name;
+
+    a.href = file; 
+    a.textContent = file.split('/').pop();
+
     li.appendChild(a);
     assignmentFilesList.appendChild(li);
 
@@ -129,7 +131,7 @@ function renderComments() {
 function handleAddComment(event) {
   // ... your implementation here ...
   event.preventDefault();
-  let commentText = newCommentText.value;
+  let commentText = newCommentText.value.trim();
 
   if (commentText === "") {
     return;
@@ -143,7 +145,7 @@ function handleAddComment(event) {
 
   currentComments.push(newComment);
   renderComments();
-  newCommentText.reset();
+  newCommentText.value = "";
 }
 
 /**
@@ -164,6 +166,42 @@ function handleAddComment(event) {
  */
 async function initializePage() {
   // ... your implementation here ...
+  try
+  {
+    currentAssignmentId = getAssignmentIdFromURL();
+
+    if (!currentAssignmentId)
+    {
+      console.error("No assignment ID found in URL.");
+      return;
+    }
+
+    const [assignmentsResponse, commentsResponse] = await Promise.all([
+      fetch("src/assignments/api/assignments.json"),
+      fetch("src/assignments/api/comments.json")
+    ]);
+
+    const assignmentsData = await assignmentsResponse.json();
+    const commentsData = await commentsResponse.json();
+
+    const assignment = assignmentsData.find(a => a.id === currentAssignmentId);
+    currentComments = commentsData[currentAssignmentId] || [];
+    
+    if (assignment)
+    {
+      renderAssignmentDetails(assignment);
+      renderComments();
+      commentForm.addEventListener("submit", handleAddComment);
+    }
+    else
+    {
+      console.error("Assignment not found for ID:", currentAssignmentId);
+    }
+  }
+  catch (error)
+  {
+    console.error("Error initializing page:", error);
+  }
 }
 
 // --- Initial Page Load ---

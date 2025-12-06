@@ -19,7 +19,7 @@ let assignments = [];
 // TODO: Select the assignment form ('#assignment-form').
 const assignmentForm = document.getElementById('assignment-form');
 // TODO: Select the assignments table body ('#assignments-tbody').
-const assignmentsTableBody = document.getElementbyId('assignments-tbody');
+const assignmentsTableBody = document.getElementById('assignments-tbody');
 // --- Functions ---
 
 /**
@@ -140,12 +140,12 @@ async function loadAndInitialize() {
   // ... your implementation here ...
   try
   {
-    const response = await fetch('api/assignments.json');
+    const response = await fetch("api/assignments.json");
 
     if(!response.ok)
        throw new Error('Network response was not ok');
 
-    assignments.push(...await response.json())
+    assignments = await response.json();
 
     renderTable();
 
