@@ -1,0 +1,138 @@
+/* General page style */
+body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin:0;
+    padding:0;
+    background:#f5f7fa;
+}
+
+/* Header */
+header{
+    text-align:center;
+    padding:25px 15px 10px 15px;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+}
+
+header h1{
+    margin:0;
+    font-size:32px;
+    font-weight:700;
+}
+
+header hr{
+    width:90%;
+    margin:10px auto 0 auto;
+    border-top:1px solid #ccc;
+}
+
+/* Main container */
+main{
+    width:85%;
+    margin:0 auto;
+    margin-top:30px;
+    max-width:1000px;
+}
+
+/* Resource intro card */
+#resource-info{
+    background:#fff;
+    border-radius:10px;
+    padding:25px 30px;
+    border:1px solid #e3e3e3;
+    box-shadow:0px 2px 4px rgba(0,0,0,0.05);
+    margin-bottom:30px;
+}
+
+#resource-info p{
+    font-size:15px;
+    line-height:1.5;
+    margin-bottom:15px;
+}
+
+/* Resource link button */
+#resource-link{
+    display:inline-block;
+    background:#007bff;
+    padding:10px 18px;
+    border-radius:6px;
+    text-decoration:none;
+    color:#fff;
+    font-weight:500;
+}
+
+#resource-link:hover{
+    background:#0069d6;
+}
+
+/* Discussion section */
+#discussion-forum{
+    background:#fff;
+    border-radius:10px;
+    padding:25px 30px;
+    border:1px solid #e3e3e3;
+    box-shadow:0px 2px 4px rgba(0,0,0,0.05);
+    margin-bottom:40px;
+}
+
+#discussion-forum h2{
+    margin-top:0;
+    font-size:24px;
+    font-weight:600;
+    margin-bottom:15px;
+}
+
+/* Individual comment */
+.comment{
+    background:#fafafa;
+    border-radius:8px;
+    padding:12px 16px;
+    border:1px solid #ddd;
+    margin-bottom:15px;
+}
+
+.comment p{
+    margin:0;
+    margin-bottom:6px;
+}
+
+.comment footer{
+    font-size:13px;
+    color:#666;
+}
+
+/* Comment form */
+#comment-form fieldset{
+    border:1px solid #bbb;
+    border-radius:8px;
+    padding:20px;
+}
+
+#comment-form legend{
+    padding:0 8px;
+    font-weight:600;
+}
+
+/* Textarea */
+#new-comment{
+    width:100%;
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:10px;
+    resize:vertical;
+}
+
+/* Submit button */
+#comment-form button{
+    background:#007bff;
+    color:white;
+    font-weight:600;
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+#comment-form button:hover{
+    background:#0069d6;
+}
