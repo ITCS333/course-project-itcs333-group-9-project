@@ -26,12 +26,27 @@ const listSection = document.getElementById('assignment-list-section');
  */
 function createAssignmentArticle(assignment) {
   // ... your implementation here ...
+  const { id, title, dueDate, description } = assignment;
   const article = document.createElement('article');
-  article.innerHTML = `
-    <h2>${assignment.title}</h2>
-    <p>Due: ${assignment.dueDate}</p>
-    <p>${assignment.description}</p>
-    <a href="details.html?id=${assignment.id}">View Details & Discussion</a>`;
+
+  const h2 = document.createElement('h2');
+  h2.textContent = title;
+
+  const pDueDate = document.createElement('p');
+
+  pDueDate.innerHTML = `<strong>Due Date:</strong> ${dueDate}`;
+
+  const pDescription = document.createElement('p');
+  pDescription.textContent = description;
+
+  const aDetails = document.createElement('a');
+  aDetails.href = `details.html?id=${id}`;
+  aDetails.textContent = 'View Details';
+
+  article.appendChild(h2);
+  article.appendChild(pDueDate);
+  article.appendChild(pDescription);
+  article.appendChild(aDetails);
   return article;
 }
 
@@ -48,29 +63,21 @@ function createAssignmentArticle(assignment) {
  */
 async function loadAssignments() {
   // ... your implementation here ...
+
   try {
-    const response = await fetch('assignments.json');
-    if (!response.ok) {
-      throw new Error('Failed to load assignments.json');
-    }
+    const response = await fetch("api/assignments.json");
     const assignments = await response.json();
-    listSection.innerHTML = '';
+    
+    listSection.innerHTML = ''; 
+
     assignments.forEach(assignment => {
       const article = createAssignmentArticle(assignment);
       listSection.appendChild(article);
     });
-  } catch (error) {
+
+  }
+  catch (error) {
     console.error('Error loading assignments:', error);
-    const dummyAssignments = [
-      { id: 1, title: 'Assignment 1: HTML Basics', dueDate: '2025-10-15', description: 'This assignment introduces the basics of HTML structure and elements.' },
-      { id: 2, title: 'Assignment 2: CSS Styling', dueDate: '2025-11-05', description: 'Learn to style web pages with CSS for better presentation.' },
-      { id: 3, title: 'Assignment 3: JavaScript Basics', dueDate: '2025-11-15', description: 'Introduction to client-side scripting with JavaScript.' }
-    ];
-    listSection.innerHTML = '';
-    dummyAssignments.forEach(assignment => {
-      const article = createAssignmentArticle(assignment);
-      listSection.appendChild(article);
-    });
   }
 }
 
