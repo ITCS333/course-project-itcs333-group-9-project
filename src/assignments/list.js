@@ -62,23 +62,39 @@ function createAssignmentArticle(assignment) {
  * - Append the returned <article> element to `listSection`.
  */
 async function loadAssignments() {
-  // ... your implementation here ...
+    try {
+        const response = await fetch("./api/index.php?resource=assignments");
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-  try {
-    const response = await fetch("api/assignments.json");
-    const assignments = await response.json();
-    
-    listSection.innerHTML = ''; 
+        const apiResponse = await response.json();
+        const assignments = apiResponse.data || [];
 
-    assignments.forEach(assignment => {
-      const article = createAssignmentArticle(assignment);
-      listSection.appendChild(article);
-    });
+        listSection.innerHTML = ''; 
 
-  }
-  catch (error) {
-    console.error('Error loading assignments:', error);
-  }
+        if (assignments.length === 0) {
+            listSection.innerHTML = '<p class="info-message">No assignments found at this time.</p>';
+            return;
+        }
+
+        assignments.forEach(assignment => {
+            const article = createAssignmentArticle({
+                id: assignment.id,
+                title: assignment.title,
+                dueDate: assignment.due_date, 
+                description: assignment.description 
+            });
+            listSection.appendChild(article);
+        });
+
+    } catch (error) {
+        console.error('Error loading assignments:', error);
+        if (listSection) {
+             listSection.innerHTML = '<p class="error-message">Failed to load course assignments. Check the console for API errors.</p>';
+        }
+    }
 }
 
 // --- Initial Page Load ---
