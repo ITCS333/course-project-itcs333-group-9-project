@@ -138,7 +138,6 @@ function handleAddStudent(event) {
     alert("Please fill out all required fields.");
     return;
   }
-  // Check if a student with the same ID already exists
   const existingStudent = students.find(student => student.id === id);
   if (existingStudent) {
     alert("A student with this ID already exists.");
@@ -149,7 +148,6 @@ function handleAddStudent(event) {
   students.push(newStudent);
   renderTable(students);
 
-  // Clear fields
   document.getElementById('student-name').value = '';
   document.getElementById('student-id').value = '';
   document.getElementById('student-email').value = '';
@@ -207,7 +205,7 @@ function handleSearch(event) {
 }
 function handleSearchKeydown(event) {
   if (event.key === 'Enter') {
-    handleSearch(event); // Triggers search on Enter
+    handleSearch(event);
   }
 }
 
@@ -233,12 +231,10 @@ function handleSort(event) {
   const property = properties[index];
   if (!property) return;
 
-  // Toggle direction
   let direction = th.getAttribute('data-sort-dir') || 'asc';
   direction = direction === 'asc' ? 'desc' : 'asc';
   th.setAttribute('data-sort-dir', direction);
 
-  // Clear other header sort indicators (optional)
   tableHeaders.forEach(header => {
       if (header !== th) {
           header.removeAttribute('data-sort-dir');
@@ -252,10 +248,8 @@ function handleSort(event) {
     let comparison = 0;
 
     if (property === 'id') {
-      // Comparison for ID (as strings or numbers)
       comparison = String(aVal).localeCompare(String(bVal), undefined, {numeric: true});
     } else {
-      // String comparison for name/email
       comparison = aVal.localeCompare(bVal);
     }
 
@@ -283,17 +277,14 @@ function handleSort(event) {
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
   try {
-    // 1. Fetch data from the server API endpoint
     const response = await fetch(STUDENT_API_URL);
 
     if (!response.ok) {
-        // If the resource is not yet implemented (e.g., 404), throw an error
         throw new Error(`HTTP error! status: ${response.status} from ${STUDENT_API_URL}`);
     }
 
     const apiResponse = await response.json();
 
-    // Check for success flag and data array, consistent with assignment API
     if (apiResponse.success && Array.isArray(apiResponse.data)) {
         students = apiResponse.data;
     } else {
@@ -302,7 +293,6 @@ async function loadStudentsAndInitialize() {
 
   } catch (error) {
     console.error('Error loading students:', error);
-    // Fallback: Use dummy data if fetch fails (e.g., 404, parsing error)
     students = [
       { name: 'John Doe', id: '12345', email: 'john.doe@example.com' },
       { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' },
@@ -311,10 +301,8 @@ async function loadStudentsAndInitialize() {
     console.warn('Using fallback student data. Implement the "students" API resource for persistent data loading.');
   }
 
-  // 5. Render the table (either with fetched data or fallback data)
   renderTable(students);
 
-  // 6. Set up all the event listeners
   if (changePasswordForm) changePasswordForm.addEventListener('submit', handleChangePassword);
   if (addStudentForm) addStudentForm.addEventListener('submit', handleAddStudent);
   if (studentTableBody) studentTableBody.addEventListener('click', handleTableClick);
