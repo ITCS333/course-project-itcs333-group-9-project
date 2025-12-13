@@ -88,7 +88,7 @@ function getStudents($db) {
     $whereClause = '';
     $params = [];
     if ($search) {
-        $whereClause = 'WHERE name LIKE :search OR student_id LIKE :search OR email LIKE :search';
+        $whereClause = 'WHERE name LIKE :search OR email LIKE :search';
         $params[':search'] = '%' . $search . '%';
     }
 
