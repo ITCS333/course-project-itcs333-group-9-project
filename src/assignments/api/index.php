@@ -1,9 +1,10 @@
 <?php
-session_start();
 // Assuming 'Database.php' contains a static method for PDO connection
 // For this example to be runnable, Database.php must be defined.
 // class Database { public static function getConnection() { /* ... */ } }
-
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL);
 $_SESSION['user'] = [
     'role' => 'student',
     'logged_in' => true

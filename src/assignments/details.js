@@ -21,6 +21,7 @@
 // These will hold the data related to *this* assignment.
 let currentAssignmentId = null;
 let currentComments = [];
+const API_URL = "./api/index.php";
 
 // --- Element Selections ---
 // TODO: Select all the elements you added IDs for in step 2.
@@ -31,6 +32,44 @@ const assignmentFilesList = document.getElementById("assignment-files-list");
 const commentList = document.getElementById("comment-list");
 const commentForm = document.getElementById("comment-form");
 const newCommentText = document.getElementById("new-comment-text");
+// --- API Helpers ---
+
+/**
+ * Generic function to fetch data from the API
+ */
+async function fetchData(endpoint) {
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const apiResponse = await response.json();
+    if (!apiResponse.success) {
+        throw new Error(apiResponse.message || 'API request failed.');
+    }
+    return apiResponse.data;
+}
+
+/**
+ * Generic function to POST data to the API
+ */
+async function postData(endpoint, data) {
+    const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const apiResponse = await response.json();
+    if (!apiResponse.success) {
+        throw new Error(apiResponse.message || 'Failed to post data to API.');
+    }
+    return apiResponse.data;
+}
+
 // --- Functions ---
 
 /**
@@ -60,21 +99,20 @@ function getAssignmentIdFromURL() {
 function renderAssignmentDetails(assignment) {
   // ... your implementation here ...
   assignmentTitle.textContent = assignment.title;
-  assignmentDueDate.textContent = "Due: " + assignment.dueDate;
+  
+  assignmentDueDate.textContent = "Due: " + assignment.due_date; 
   assignmentDescription.textContent = assignment.description;
   assignmentFilesList.innerHTML = "";
 
-  assignment.files.forEach(file => {
+  (assignment.files || []).forEach(file => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
 
-    const li = document.createElement("li");
-    const a = document.createElement("a");
+      a.href = file; 
+      a.textContent = file.split('/').pop();
 
-    a.href = file; 
-    a.textContent = file.split('/').pop();
-
-    li.appendChild(a);
-    assignmentFilesList.appendChild(li);
-
+      li.appendChild(a);
+      assignmentFilesList.appendChild(li);
   });
 }
 
@@ -88,9 +126,12 @@ function createCommentArticle(comment)
   // ... your implementation here ...
   const article = document.createElement("article");
   const p = document.createElement("p");
-  p.textContent = comment.text;
+  
+  p.textContent = comment.text; 
   const footer = document.createElement("footer");
-  footer.textContent = "Posted by: " + comment.author;
+  
+  footer.textContent = "Posted by: " + comment.author; 
+
   article.appendChild(p);
   article.appendChild(footer);
   return article;
@@ -109,9 +150,14 @@ function renderComments() {
   // ... your implementation here ...
   commentList.innerHTML = "";
 
+  if (currentComments.length === 0) {
+      commentList.innerHTML = '<p class="info-message">No comments yet. Be the first!</p>';
+      return;
+  }
+
   currentComments.forEach(comment => {
-    const commentArticle = createCommentArticle(comment);
-    commentList.appendChild(commentArticle);
+      const commentArticle = createCommentArticle(comment);
+      commentList.appendChild(commentArticle);
   });
 }
 
@@ -128,24 +174,46 @@ function renderComments() {
  * 6. Call `renderComments()` to refresh the list.
  * 7. Clear the `newCommentText` textarea.
  */
-function handleAddComment(event) {
+async function handleAddComment(event) {
   // ... your implementation here ...
-  event.preventDefault();
-  const commentText = newCommentText.value.trim();
+    event.preventDefault();
 
-  if (commentText === "") {
-    return;
-  }
+    // Disable form elements temporarily to prevent double submission
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
 
-  const newComment =
-  {
-    author: "Student",
-    text: commentText
-  }
+    const commentText = newCommentText.value.trim();
 
-  currentComments.push(newComment);
-  renderComments();
-  newCommentText.value = "";
+    if (commentText === "") {
+        if (submitButton) submitButton.disabled = false;
+        return;
+    }
+
+    try {
+        const newCommentData = {
+            // Hardcoding 'Student' as author as per your original TODO, 
+            // but the API supports different names
+            assignment_id: currentAssignmentId,
+            author: "Student", 
+            text: commentText
+        };
+
+        // 1. Send the new comment to the API
+        const newComment = await postData(API_URL + "?resource=comments", newCommentData);
+
+        // 2. Add the newly created comment (with ID, timestamp, etc.) to the local array
+        currentComments.push(newComment);
+
+        // 3. Render and clear
+        renderComments();
+        newCommentText.value = "";
+
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        alert('Failed to post comment. Check console for details.');
+    } finally {
+        if (submitButton) submitButton.disabled = false;
+    }
 }
 
 /**
@@ -166,43 +234,39 @@ function handleAddComment(event) {
  */
 async function initializePage() {
   // ... your implementation here ...
-  try
-  {
-    currentAssignmentId = getAssignmentIdFromURL();
+    try {
+        currentAssignmentId = getAssignmentIdFromURL();
 
-    if (!currentAssignmentId)
-    {
-      assignmentTitle.textContent = "No assignment ID found in URL.";
-      return;
+        if (!currentAssignmentId) {
+            assignmentTitle.textContent = "Error: No assignment ID found in URL.";
+            return;
+        }
+
+        // --- 1. Fetch Assignment Details ---
+        const assignmentEndpoint = `${API_URL}?resource=assignments&id=${currentAssignmentId}`;
+        const assignment = await fetchData(assignmentEndpoint);
+
+        // --- 2. Fetch Comments ---
+        const commentsEndpoint = `${API_URL}?resource=comments&assignment_id=${currentAssignmentId}`;
+        currentComments = await fetchData(commentsEndpoint);
+
+        // --- 3. Render Data ---
+        if (assignment) {
+            renderAssignmentDetails(assignment);
+            renderComments();
+            commentForm.addEventListener("submit", handleAddComment);
+        } else {
+             // This case should be handled by the 404 response check in fetchData, 
+             // but included for clarity.
+            assignmentTitle.textContent = "Assignment not found for ID: " + currentAssignmentId;
+        }
+
+    } catch (error) {
+        // Display a user-friendly error on the page
+        console.error('Error initializing page:', error);
+        assignmentTitle.textContent = "Error loading assignment or comments.";
+        assignmentDescription.textContent = `A detailed error occurred: ${error.message}. Please check the console.`;
     }
-
-    const [assignmentsResponse, commentsResponse] = await Promise.all([
-      fetch("api/assignments.json"),
-      fetch("api/comments.json")
-    ]);
-
-    const assignmentsData = await assignmentsResponse.json();
-    const commentsData = await commentsResponse.json();
-
-    const assignment = assignmentsData.find(a => a.id === String(currentAssignmentId));
-    currentComments = commentsData[currentAssignmentId] || [];
-    
-    if (assignment)
-    {
-      renderAssignmentDetails(assignment);
-      renderComments();
-      commentForm.addEventListener("submit", handleAddComment);
-    }
-    else
-    {
-      assignmentTitle.textContent = "Assignment not found for ID:" + currentAssignmentId;
-    }
-  }
-  catch (error)
-  {
-    assignmentTitle.textContent = "Error initializing page:" + error;
-  }
 }
-
 // --- Initial Page Load ---
 initializePage();

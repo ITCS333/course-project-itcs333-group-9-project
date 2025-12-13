@@ -14,6 +14,7 @@
 // --- Global Data Store ---
 // This will hold the assignments loaded from the JSON file.
 let assignments = [];
+const API_URL = "./api/index.php?resource=assignments";
 
 // --- Element Selections ---
 // TODO: Select the assignment form ('#assignment-form').
@@ -34,24 +35,23 @@ const assignmentsTableBody = document.getElementById('assignments-tbody');
  */
 function createAssignmentRow(assignment) {
   // ... your implementation here ...
-  const row = document.createElement('tr');
+    const row = document.createElement('tr');
 
-  const titleCell = document.createElement('td');
-  titleCell.textContent = assignment.title;
-  row.appendChild(titleCell);
+    const titleCell = document.createElement('td');
+    titleCell.textContent = assignment.title;
+    row.appendChild(titleCell);
 
-  const dueDateCell = document.createElement('td');
-  dueDateCell.textContent = assignment.dueDate;
-  row.appendChild(dueDateCell);
+    const dueDateCell = document.createElement('td');
+    dueDateCell.textContent = assignment.dueDate;
+    row.appendChild(dueDateCell);
 
-  const actionsCell = document.createElement('td');
-  actionsCell.innerHTML = `<button class="edit-btn" data-id="${assignment.id}">Edit</button>
-  <button class="delete-btn" data-id="${assignment.id}">Delete</button>`;
-  row.appendChild(actionsCell);
+    const actionsCell = document.createElement('td');
+    actionsCell.innerHTML = `<button class="edit-btn" data-id="${assignment.id}">Edit</button>
+    <button class="delete-btn" data-id="${assignment.id}">Delete</button>`;
+    row.appendChild(actionsCell);
 
-  return row;
+    return row;
 }
-
 /**
  * TODO: Implement the renderTable function.
  * It should:
@@ -62,14 +62,19 @@ function createAssignmentRow(assignment) {
  */
 function renderTable() {
   // ... your implementation here ...
-  assignmentsTableBody.innerHTML = '';
+    assignmentsTableBody.innerHTML = '';
 
-  assignments.forEach(assignment => {
-    const row = createAssignmentRow(assignment);
-    assignmentsTableBody.appendChild(row)
-  })
+    if (assignments.length === 0) {
+        // Simple message if table is empty
+        assignmentsTableBody.innerHTML = '<tr><td colspan="3">No assignments found.</td></tr>';
+        return;
+    }
+
+    assignments.forEach(assignment => {
+        const row = createAssignmentRow(assignment);
+        assignmentsTableBody.appendChild(row)
+    });
 }
-
 /**
  * TODO: Implement the handleAddAssignment function.
  * This is the event handler for the form's 'submit' event.
@@ -81,30 +86,74 @@ function renderTable() {
  * 5. Call `renderTable()` to refresh the list.
  * 6. Reset the form.
  */
-function handleAddAssignment(event) {
+async function handleAddAssignment(event) {
   // ... your implementation here ...
-  event.preventDefault();
+    event.preventDefault();
 
-  const title = document.getElementById('assignment-title').value;
-  const description = document.getElementById('assignment-description').value;
-  const dueDate = document.getElementById('assignment-due-date').value;
-  const files = document.getElementById('assignment-files').value.split('\n').map(file => file.trim()).filter(file => file !== '');
+    // 1. Collect and validate local form data
+    const title = document.getElementById('assignment-title').value;
+    const description = document.getElementById('assignment-description').value;
+    const dueDate = document.getElementById('assignment-due-date').value;
+    const files = document.getElementById('assignment-files').value
+        .split('\n')
+        .map(file => file.trim())
+        .filter(file => file !== '');
 
-  const assignment =
-  {
-    id: `asg_${Date.now()}`,
-    title: title,
-    description: description,
-    dueDate: dueDate,
-    files: files
-  }
+    if (!title || !description || !dueDate) {
+        alert("Please fill in all required fields (Title, Description, Due Date).");
+        return;
+    }
 
-  assignments.push(assignment);
+    // Prepare data for the API (use API's snake_case for due date)
+    const newAssignmentData = {
+        title: title,
+        description: description,
+        due_date: dueDate, // API expects 'due_date'
+        files: files
+    };
 
-  renderTable();
-  assignmentForm.reset();
+    try {
+        // 2. Send POST request to API
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newAssignmentData),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const apiResponse = await response.json();
+
+        if (!apiResponse.success || !apiResponse.data) {
+             throw new Error(apiResponse.message || 'API failed to create assignment.');
+        }
+
+        // 3. Add the *API-returned* data (with the real ID) to the local array
+        const createdAssignment = apiResponse.data;
+
+        // Map the fields from the API's snake_case to the frontend's camelCase
+        assignments.push({
+            id: createdAssignment.id,
+            title: createdAssignment.title,
+            description: createdAssignment.description,
+            dueDate: createdAssignment.due_date, // Mapped field
+            files: createdAssignment.files
+        });
+
+        // 4. Update UI
+        renderTable();
+        assignmentForm.reset();
+        alert(`Assignment "${title}" created successfully!`);
+
+    } catch (error) {
+        console.error('Error creating assignment:', error);
+        alert('Failed to add assignment. Check console for details.');
+    }
 }
-
 /**
  * TODO: Implement the handleTableClick function.
  * This is an event listener on the `assignmentsTableBody` (for delegation).
@@ -115,17 +164,47 @@ function handleAddAssignment(event) {
  * with the matching ID (in-memory only).
  * 4. Call `renderTable()` to refresh the list.
  */
-function handleTableClick(event) {
+async function handleTableClick(event) {
   // ... your implementation here ...
-  if (event.target.classList.contains('delete-btn'))
-  {
-    const id = event.target.getAttribute('data-id');
 
-    assignments = assignments.filter(assignment => assignment.id !== id);
-    renderTable();
-  }
+    if (event.target.classList.contains('delete-btn')) {
+        const id = event.target.getAttribute('data-id');
+
+        if (!confirm(`Are you sure you want to delete assignment ID ${id}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            // 1. Send DELETE request to API, including ID as query parameter
+            const deleteUrl = `${API_URL}&id=${id}`; 
+
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const apiResponse = await response.json();
+            if (!apiResponse.success) {
+                 throw new Error(apiResponse.message || 'API failed to delete assignment.');
+            }
+
+            // 2. On success, update the local array by filtering out the deleted ID
+            assignments = assignments.filter(assignment => assignment.id !== parseInt(id));
+
+            // 3. Update UI
+            renderTable();
+            alert('Assignment deleted successfully.');
+
+        } catch (error) {
+            console.error('Error deleting assignment:', error);
+            alert('Failed to delete assignment. Check console for details.');
+        }
+    }
+    // TODO: Add logic for 'edit-btn' here when implementing the edit form.
 }
-
 /**
  * TODO: Implement the loadAndInitialize function.
  * This function needs to be 'async'.
@@ -137,24 +216,43 @@ function handleTableClick(event) {
  * 5. Add the 'click' event listener to `assignmentsTableBody` (calls `handleTableClick`).
  */
 async function loadAndInitialize() {
-  // ... your implementation here ...
-  try
-  {
-    const response = await fetch("api/assignments.json");
+      // ... your implementation here ...
+    try {
+        // 1. Fetch data from PHP API
+        const response = await fetch(API_URL);
 
-    if(!response.ok)
-       throw new Error('Network response was not ok');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-    assignments = await response.json();
+        const apiResponse = await response.json();
 
-    renderTable();
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || 'API request failed.');
+        }
 
-    assignmentForm.addEventListener('submit', handleAddAssignment);
-    assignmentsTableBody.addEventListener('click', handleTableClick);
-  }
-  catch(error){console.error('Error loading assignments:', error.message)}
+        let apiAssignments = apiResponse.data || [];
+
+        // 2. Map the API response fields to match the frontend structure
+        assignments = apiAssignments.map(a => ({
+            id: a.id,
+            title: a.title,
+            description: a.description,
+            dueDate: a.due_date,
+            files: a.files || []
+        }));
+
+        // 3. Initialize UI and event listeners
+        renderTable();
+
+        assignmentForm.addEventListener('submit', handleAddAssignment);
+        assignmentsTableBody.addEventListener('click', handleTableClick);
+    }
+    catch(error){
+        console.error('Error loading assignments:', error.message);
+        assignmentsTableBody.innerHTML = '<tr><td colspan="3" class="error-message">Failed to load data from API. See console.</td></tr>';
+    }
 }
-
 // --- Initial Page Load ---
 // Call the main async function to start the application.
 loadAndInitialize();
