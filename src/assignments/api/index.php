@@ -226,18 +226,14 @@ function createAssignment($db, $data) {
         return;
     }
     
-    // TODO: Generate a unique assignment ID
-    $id = 'asg_' . time() . rand(1000, 9999);
-    
     // TODO: Handle the 'files' field
     $files = isset($data['files']) && is_array($data['files']) ? json_encode($data['files']) : json_encode([]);
     
     // TODO: Prepare INSERT query
-    $sql = "INSERT INTO assignments (id, title, description, due_date, files) VALUES (:id, :title, :description, :due_date, :files)";
+    $sql = "INSERT INTO assignments (title, description, due_date, files) VALUES (:title, :description, :due_date, :files)";
     $stmt = $db->prepare($sql);
     
     // TODO: Bind all parameters
-    $stmt->bindValue(':id', $id);
     $stmt->bindValue(':title', $title);
     $stmt->bindValue(':description', $description);
     $stmt->bindValue(':due_date', $dueDate);
@@ -245,9 +241,9 @@ function createAssignment($db, $data) {
     
     // TODO: Execute the statement
     if ($stmt->execute()) {
-    
+    $assignmentId = $db->lastInsertId();
     // TODO: Check if insert was successful
-    sendResponse(['success' => true, 'message' => 'Assignment created', 'data' => ['id' => $id, 'title' => $title, 'description' => $description, 'due_date' => $dueDate, 'files' => json_decode($files, true)]], 201);
+    sendResponse(['success' => true, 'message' => 'Assignment created', 'data' => ['id' => $assignmentId, 'title' => $title, 'description' => $description, 'due_date' => $dueDate, 'files' => json_decode($files, true)]], 201);
     } else {
     
     // TODO: If insert failed, return 500 error
@@ -366,6 +362,8 @@ function deleteAssignment($db, $assignmentId) {
         return;
     }
     
+    $assignmentId = intval($assignmentId);
+
     // TODO: Check if assignment exists
     $sqlCheck = "SELECT id FROM assignments WHERE id = :id";
     $stmtCheck = $db->prepare($sqlCheck);
@@ -377,7 +375,7 @@ function deleteAssignment($db, $assignmentId) {
     }
     
     // TODO: Delete associated comments first (due to foreign key constraint)
-    $sqlDeleteComments = "DELETE FROM comments WHERE assignment_id = :assignment_id";
+    $sqlDeleteComments = "DELETE FROM comments_assignment WHERE assignment_id = :assignment_id";
     $stmtDeleteComments = $db->prepare($sqlDeleteComments);
     $stmtDeleteComments->bindValue(':assignment_id', $assignmentId);
     $stmtDeleteComments->execute();
@@ -423,8 +421,10 @@ function getCommentsByAssignment($db, $assignmentId) {
         return;
     }
     
+    $assignmentId = intval($assignmentId);
+
     // TODO: Prepare SQL query to select all comments for the assignment
-    $sql = "SELECT id, assignment_id, author, text, created_at FROM comments WHERE assignment_id = :assignment_id ORDER BY created_at ASC";
+    $sql = "SELECT id, assignment_id, author, text, created_at FROM comments_assignment WHERE assignment_id = :assignment_id ORDER BY created_at ASC";    
     $stmt = $db->prepare($sql);
     
     // TODO: Bind the :assignment_id parameter
@@ -461,7 +461,7 @@ function createComment($db, $data) {
     }
     
     // TODO: Sanitize input data
-    $assignmentId = sanitizeInput($data['assignment_id']);
+    $assignmentId = intval(sanitizeInput($data['assignment_id']));
     $author = sanitizeInput($data['author']);
     $text = sanitizeInput($data['text']);
     
@@ -482,7 +482,7 @@ function createComment($db, $data) {
     }
     
     // TODO: Prepare INSERT query for comment
-    $sql = "INSERT INTO comments (assignment_id, author, text) VALUES (:assignment_id, :author, :text)";
+    $sql = "INSERT INTO comments_assignment (assignment_id, author, text) VALUES (:assignment_id, :author, :text)";
     $stmt = $db->prepare($sql);
     
     // TODO: Bind all parameters
@@ -520,8 +520,10 @@ function deleteComment($db, $commentId) {
         return;
     }
     
+    $commentId = intval($commentId);
+
     // TODO: Check if comment exists
-    $sqlCheck = "SELECT id FROM comments WHERE id = :id";
+    $sqlCheck = "SELECT id FROM comments_assignment WHERE id = :id";
     $stmtCheck = $db->prepare($sqlCheck);
     $stmtCheck->bindValue(':id', $commentId);
     $stmtCheck->execute();
@@ -531,7 +533,7 @@ function deleteComment($db, $commentId) {
     }
     
     // TODO: Prepare DELETE query
-    $sql = "DELETE FROM comments WHERE id = :id";
+    $sql = "DELETE FROM comments_assignment WHERE id = :id";
     $stmt = $db->prepare($sql);
     
     // TODO: Bind the :id parameter
@@ -556,7 +558,11 @@ function deleteComment($db, $commentId) {
 
 try {
     // TODO: Get the 'resource' query parameter to determine which resource to access
-    sendResponse(['success' => false, 'message' => 'Failed to delete comment'], 500);
+    $resource = $queryParams['resource'] ?? null;
+    
+    if (!$resource) {
+        sendResponse(['success' => false, 'message' => 'Resource parameter is required'], 400);
+    }
     
     // TODO: Route based on HTTP method and resource type
     
