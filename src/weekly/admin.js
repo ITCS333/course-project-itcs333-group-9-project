@@ -109,10 +109,17 @@ function handleAddWeek(event) {
     description,
     links: weekLinks,
   };
-  weeks.push(weekObj);
-  renderTable();
-  event.target.reset();
-  customAddWeekToDB(weekObj);
+  customAddWeekToDB(weekObj).then((success) => {
+    if (!success) {
+      // alert("You must be logged in as an admin to add a week.")
+      showToast("You must be logged in as an admin to add a week.", "error");
+      return;
+    }
+    weeks.push(weekObj);
+    renderTable();
+    event.target.reset();
+    showToast("Week added successfully!", "success");
+  });
 }
 async function customAddWeekToDB(week) {
   try {
@@ -129,11 +136,15 @@ async function customAddWeekToDB(week) {
         links: week.links,
       }),
     });
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
+    return true;
+    console.log("Week added to DB:", data);
   } catch (err) {
-    console.log("Error adding week to DB:", err);
+    console.log("Error adding week to DB: ", err.message);
+    return false;
   }
 }
 
@@ -150,9 +161,19 @@ async function customAddWeekToDB(week) {
 function handleTableClick(event) {
   // ... your implementation here ...
   if (event.target.classList.contains("delete-btn")) {
-    weeks = weeks.filter((week) => week.id != event.target.dataset.id);
-    renderTable();
-    customDeleteWeekFromDB(event.target.dataset.id);
+    customDeleteWeekFromDB(event.target.dataset.id).then((success) => {
+      if (!success) {
+        // alert("You must be logged in as an admin to delete a week.")
+        showToast(
+          "You must be logged in as an admin to delete a week.",
+          "error"
+        );
+        return;
+      }
+      weeks = weeks.filter((week) => week.id != event.target.dataset.id);
+      renderTable();
+      showToast("Week deleted successfully!", "success");
+    });
   }
   if (event.target.classList.contains("edit-btn")) {
     // TODO: navigate to the top of the page
@@ -182,17 +203,22 @@ function handleTableClick(event) {
   }
 }
 async function customDeleteWeekFromDB(weekId) {
+  console.log("asdkljasdkjasdjkljs");
   try {
     const response = await fetch(`/src/weekly/api/index.php?resource=weeks`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ week_id: weekId }),
     });
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
+    console.log("Week deleted from DB:", data);
+    return true;
   } catch (err) {
-    console.log("Error deleting week from DB:", err);
+    console.log("Error deleting week from DB: ", err.message);
+    return false;
   }
 }
 
@@ -204,36 +230,12 @@ function handleUpdateWeek(event) {
   const description = document.getElementById("week-description").value;
   const weekLinks = document.getElementById("week-links").value.split("\n");
   if (title.trim() === "" || startDate.trim() === "") {
-    alert("Title and Start Date are required.");
+    // alert("Title and Start Date are required.");
+    showToast("Title and Start Date are required.", "error");
     return;
   }
 
   const weekId = editingWeekId;
-  const newWeekObj = weeks.map((week, index) => {
-    if (week.id == weekId) {
-      return {
-        id: weekId,
-        title,
-        startDate,
-        description,
-        links: weekLinks,
-      };
-    } else {
-      return week;
-    }
-  });
-  weeks = newWeekObj;
-  editingWeekId = null;
-  weekForm.reset();
-  document.querySelector(".add-week-btn").classList.remove("hide-btn");
-  document.querySelector(".update-week-btn").classList.add("hide-btn");
-  document.querySelector(".cancel-update-btn").classList.add("hide-btn");
-  renderTable();
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    console.log(btn);
-    btn.disabled = false;
-  });
-  // event.target.reset();
 
   customUpdateWeekToDB({
     id: weekId,
@@ -241,7 +243,40 @@ function handleUpdateWeek(event) {
     startDate,
     description,
     links: weekLinks,
+  }).then((success) => {
+    if (!success) {
+      // alert("You must be logged in as an admin to update a week.")
+      showToast("You must be logged in as an admin to update a week.", "error");
+      return;
+    }
+    const newWeekObj = weeks.map((week, index) => {
+      if (week.id == weekId) {
+        return {
+          id: weekId,
+          title,
+          startDate,
+          description,
+          links: weekLinks,
+        };
+      } else {
+        return week;
+      }
+    });
+    weeks = newWeekObj;
+    editingWeekId = null;
+    weekForm.reset();
+    document.querySelector(".add-week-btn").classList.remove("hide-btn");
+    document.querySelector(".update-week-btn").classList.add("hide-btn");
+    document.querySelector(".cancel-update-btn").classList.add("hide-btn");
+    renderTable();
+    showToast("Week updated successfully!", "success");
   });
+
+  document.querySelectorAll(".delete-btn").forEach((btn) => {
+    console.log(btn);
+    btn.disabled = false;
+  });
+  // event.target.reset();
 
   editingWeekId = null;
 }
@@ -260,11 +295,14 @@ async function customUpdateWeekToDB(week) {
         links: week.links,
       }),
     });
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
+    return true;
   } catch (err) {
-    console.log("Error updating week in DB:", err);
+    console.log("Error updating week to DB: ", err.message);
+    return false;
   }
 }
 function handleCancelUpdate(event) {
@@ -328,3 +366,70 @@ async function loadAndInitialize() {
 // --- Initial Page Load ---
 // Call the main async function to start the application.
 loadAndInitialize();
+
+function showToast(message, type = "info", duration = 3000) {
+  // Ensure container exists
+  let toastContainer = document.getElementById("toast-container");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.id = "toast-container";
+    toastContainer.style.position = "fixed";
+    toastContainer.style.top = "20px";
+    toastContainer.style.right = "20px";
+    toastContainer.style.display = "flex";
+    toastContainer.style.flexDirection = "column";
+    toastContainer.style.gap = "10px";
+    toastContainer.style.maxWidth = "90vw"; // responsive width
+    toastContainer.style.zIndex = "9999";
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create toast element
+  const toast = document.createElement("div");
+  toast.innerText = message;
+  toast.classList.add("toast");
+
+  // Basic styles
+  toast.style.padding = "10px 20px";
+  toast.style.borderRadius = "5px";
+  toast.style.color = "#fff";
+  toast.style.fontWeight = "bold";
+  toast.style.boxShadow = "0px 2px 6px rgba(0,0,0,0.2)";
+  toast.style.wordWrap = "break-word";
+  toast.style.maxWidth = "100%";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+  toast.style.transform = "translateY(-10px)";
+
+  // Background based on type
+  switch (type) {
+    case "success":
+      toast.style.backgroundColor = "#4caf50";
+      break;
+    case "error":
+      toast.style.backgroundColor = "#f44336";
+      break;
+    case "warning":
+      toast.style.backgroundColor = "#ff9800";
+      break;
+    default:
+      toast.style.backgroundColor = "#2196f3";
+  }
+
+  toastContainer.appendChild(toast);
+
+  // Animate in
+  setTimeout(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  }, 100);
+
+  // Animate out and remove
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-10px)";
+    setTimeout(() => {
+      toast.remove();
+    }, 500);
+  }, duration);
+}

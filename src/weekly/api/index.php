@@ -38,6 +38,7 @@
 // ============================================================================
 // SETUP AND CONFIGURATION
 // ============================================================================
+session_start();
 
 // TODO: Set headers for JSON response and CORS
 // Set Content-Type to application/json
@@ -223,6 +224,10 @@ function getWeekById($db, $weekId) {
  *   - links: Array of resource links (will be JSON encoded)
  */
 function createWeek($db, $data) {
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset($_SESSION['is_admin']) ||$_SESSION['is_admin'] !== 1){
+        sendError("You must be logged in as an admin to create a week", 401);
+        exit();
+    }
     // TODO: Validate required fields
     // Check if week_id, title, start_date, and description are provided
     // If any field is missing, return error response with 400 status
@@ -284,7 +289,7 @@ function createWeek($db, $data) {
             'title' => $title,
             'start_date' => $startDate,
             'description' => $data['description'],
-            'links' => $links
+            'links' => $links,
         ];
         sendResponse(['success' => true, 'data' => $newWeek], 201);
     } else {
@@ -307,6 +312,10 @@ function createWeek($db, $data) {
  *   - links: Updated array of links (optional)
  */
 function updateWeek($db, $data) {
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset($_SESSION['is_admin']) ||$_SESSION['is_admin'] !== 1){
+        sendError("You must be logged in as an admin to update a week", 401);
+        exit();
+    }
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
     if (empty($data['week_id'])) {
@@ -412,6 +421,10 @@ function updateWeek($db, $data) {
  *   - week_id: The week identifier
  */
 function deleteWeek($db, $weekId) {
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true || !isset($_SESSION['is_admin']) ||$_SESSION['is_admin'] !== 1){
+        sendError("You must be logged in as an admin to delete a week", 401);
+        exit();
+    }
     // TODO: Validate that week_id is provided
     // If not, return error response with 400 status
     if (empty($weekId)) {
@@ -522,6 +535,10 @@ function getCommentsByWeek($db, $weekId) {
  *   - text: Comment text content
  */
 function createComment($db, $data) {
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
+        sendError("You must be logged in to create a comment", 401);
+        exit();
+    }
     // TODO: Validate required fields
     // Check if week_id, author, and text are provided
     // If any field is missing, return error response with 400 status
@@ -529,7 +546,8 @@ function createComment($db, $data) {
         sendError("Missing required fields: week_id, author, text", 400);
     }
     $weekId = $data['week_id'];
-    $author = $data['author'];
+    // $author = $data['author'];
+    $author = $_SESSION['user_name'];
     $text = $data['text'];
 
     
@@ -603,6 +621,10 @@ function createComment($db, $data) {
  *   - id: The comment ID to delete
  */
 function deleteComment($db, $commentId) {
+    if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true){
+        sendError("You must be logged in to delete a comment", 401);
+        exit();
+    }
     // TODO: Validate that id is provided
     // If not, return error response with 400 status
     if (empty($commentId)) {
@@ -624,12 +646,13 @@ function deleteComment($db, $commentId) {
     
     // TODO: Prepare DELETE query
     // DELETE FROM comments WHERE id = ?
-    $deleteQuery = "DELETE FROM comments_week WHERE id = ?";
+    $deleteQuery = "DELETE FROM comments_week WHERE id = ? and author = ?";
     $deleteStmt = $db->prepare($deleteQuery);
 
     
     // TODO: Bind the id parameter
     $deleteStmt->bindParam(1, $commentId);
+    $deleteStmt->bindParam(2, $_SESSION['user_name']);
 
     
     // TODO: Execute the query
@@ -642,7 +665,7 @@ function deleteComment($db, $commentId) {
     if ($deleteStmt->rowCount() > 0) {
         sendResponse(['success' => true, 'message' => 'Comment deleted successfully']);
     } else {
-        sendError("Failed to delete comment", 500);
+        sendError("Failed to delete comment. You cannot delete others' comments.", 500);
     }
 
 }

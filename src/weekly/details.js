@@ -149,10 +149,24 @@ function handleAddComment(event) {
     return;
   }
   const commentObj = { author: "Student", text: commentText };
-  currentComments.push(commentObj);
-  renderComments();
-  event.target.reset();
-  customAddCommentToDB(commentObj);
+
+  // if (localStorage.getItem("user") != undefined) {
+  //   console.log(JSON.parse(localStorage.getItem("user")));
+  //   const user = JSON.parse(localStorage.getItem("user"));
+  //   commentObj.author = user.name;
+  // }
+  customAddCommentToDB(commentObj).then((data) => {
+    if (!data) {
+      // alert("You must be logged in to post a comment.")
+      showToast("You must be logged in to post a comment.", "error");
+      return;
+    }
+    currentComments.push(data);
+    renderComments();
+    event.target.reset();
+    showToast("Comment posted successfully!", "success");
+  });
+  // currentComments.push(commentObj);
 }
 async function customAddCommentToDB(comment) {
   try {
@@ -168,12 +182,15 @@ async function customAddCommentToDB(comment) {
         }),
       }
     );
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
-    currentComments[currentComments.length - 1] = (await response.json()).data;
+    // currentComments[currentComments.length - 1] = data.data;
+    return data.data;
   } catch (err) {
-    console.log("Error adding comment to DB:", err);
+    console.log("Error adding comment to DB:", err.message);
+    return false;
   }
 }
 
@@ -184,9 +201,26 @@ function handleDeleteComment(event) {
     (comment) => comment.text === commentText
   );
   if (commentIndex !== -1) {
-    customDeleteCommentFromDB(currentComments[commentIndex].id);
-    currentComments.splice(commentIndex, 1);
-    renderComments();
+    customDeleteCommentFromDB(currentComments[commentIndex].id).then(
+      (success) => {
+        if (!success || success == 500) {
+          if (success == 500) {
+            // alert("You cannot delete other users' comments.")
+            showToast("You cannot delete other users' comments.", "error");
+            return;
+          }
+          // alert("You must be logged in as to delete your comment.")
+          showToast(
+            "You must be logged in as to delete your comment.",
+            "error"
+          );
+          return;
+        }
+        currentComments.splice(commentIndex, 1);
+        renderComments();
+        showToast("Comment deleted successfully!", "success");
+      }
+    );
   }
 }
 async function customDeleteCommentFromDB(commentId) {
@@ -199,11 +233,17 @@ async function customDeleteCommentFromDB(commentId) {
         body: JSON.stringify({ id: commentId }),
       }
     );
+    const data = await response.json();
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      if (response.status == 500) {
+        return 500;
+      }
+      throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
+    return true;
   } catch (err) {
-    console.log("Error deleting comment from DB:", err);
+    console.log("Error deleting comment from DB:", err.message);
+    return false;
   }
 }
 
@@ -288,3 +328,70 @@ async function initializePage() {
 
 // --- Initial Page Load ---
 initializePage();
+
+function showToast(message, type = "info", duration = 3000) {
+  // Ensure container exists
+  let toastContainer = document.getElementById("toast-container");
+  if (!toastContainer) {
+    toastContainer = document.createElement("div");
+    toastContainer.id = "toast-container";
+    toastContainer.style.position = "fixed";
+    toastContainer.style.top = "20px";
+    toastContainer.style.right = "20px";
+    toastContainer.style.display = "flex";
+    toastContainer.style.flexDirection = "column";
+    toastContainer.style.gap = "10px";
+    toastContainer.style.maxWidth = "90vw"; // responsive width
+    toastContainer.style.zIndex = "9999";
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create toast element
+  const toast = document.createElement("div");
+  toast.innerText = message;
+  toast.classList.add("toast");
+
+  // Basic styles
+  toast.style.padding = "10px 20px";
+  toast.style.borderRadius = "5px";
+  toast.style.color = "#fff";
+  toast.style.fontWeight = "bold";
+  toast.style.boxShadow = "0px 2px 6px rgba(0,0,0,0.2)";
+  toast.style.wordWrap = "break-word";
+  toast.style.maxWidth = "100%";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+  toast.style.transform = "translateY(-10px)";
+
+  // Background based on type
+  switch (type) {
+    case "success":
+      toast.style.backgroundColor = "#4caf50";
+      break;
+    case "error":
+      toast.style.backgroundColor = "#f44336";
+      break;
+    case "warning":
+      toast.style.backgroundColor = "#ff9800";
+      break;
+    default:
+      toast.style.backgroundColor = "#2196f3";
+  }
+
+  toastContainer.appendChild(toast);
+
+  // Animate in
+  setTimeout(() => {
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+  }, 100);
+
+  // Animate out and remove
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-10px)";
+    setTimeout(() => {
+      toast.remove();
+    }, 500);
+  }, duration);
+}
