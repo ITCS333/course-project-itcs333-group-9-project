@@ -12,6 +12,7 @@
 // --- Global Data Store ---
 // This array will be populated with data fetched from 'students.json'.
 let students = [];
+const STUDENT_API_URL = "./api/index.php?resource=students";
 
 // --- Element Selections ---
 // We can safely select elements here because 'defer' guarantees
@@ -61,7 +62,6 @@ function createStudentRow(student) {
   `;
   return tr;
 }
-
 /**
  * TODO: Implement the renderTable function.
  * This function takes an array of student objects.
@@ -73,12 +73,15 @@ function createStudentRow(student) {
 function renderTable(studentArray) {
   // ... your implementation here ...
   studentTableBody.innerHTML = '';
+  if (studentArray.length === 0) {
+      studentTableBody.innerHTML = '<tr><td colspan="4" class="info-message">No students found.</td></tr>';
+      return;
+  }
   studentArray.forEach(student => {
     const row = createStudentRow(student);
     studentTableBody.appendChild(row);
   });
 }
-
 /**
  * TODO: Implement the handleChangePassword function.
  * This function will be called when the "Update Password" button is clicked.
@@ -110,7 +113,6 @@ function handleChangePassword(event) {
   document.getElementById('new-password').value = '';
   document.getElementById('confirm-password').value = '';
 }
-
 /**
  * TODO: Implement the handleAddStudent function.
  * This function will be called when the "Add Student" button is clicked.
@@ -136,6 +138,7 @@ function handleAddStudent(event) {
     alert("Please fill out all required fields.");
     return;
   }
+  // Check if a student with the same ID already exists
   const existingStudent = students.find(student => student.id === id);
   if (existingStudent) {
     alert("A student with this ID already exists.");
@@ -146,12 +149,12 @@ function handleAddStudent(event) {
   students.push(newStudent);
   renderTable(students);
 
+  // Clear fields
   document.getElementById('student-name').value = '';
   document.getElementById('student-id').value = '';
   document.getElementById('student-email').value = '';
   document.getElementById('default-password').value = 'password123';
 }
-
 /**
  * TODO: Implement the handleTableClick function.
  * This function will be an event listener on the `studentTableBody` (event delegation).
@@ -177,7 +180,6 @@ function handleTableClick(event) {
     }
   }
 }
-
 /**
  * TODO: Implement the handleSearch function.
  * This function will be called on the "input" event of the `searchInput`.
@@ -191,16 +193,18 @@ function handleTableClick(event) {
  */
 function handleSearch(event) {
   // ... your implementation here ...
-   const searchTerm = searchInput.value.toLowerCase();
+  const searchTerm = searchInput.value.toLowerCase();
   if (searchTerm === '') {
     renderTable(students);
   } else {
     const filteredStudents = students.filter(student =>
-      student.name.toLowerCase().includes(searchTerm));
+      student.name.toLowerCase().includes(searchTerm) ||
+      student.id.toLowerCase().includes(searchTerm) ||
+      student.email.toLowerCase().includes(searchTerm)
+    );
     renderTable(filteredStudents);
   }
 }
-
 function handleSearchKeydown(event) {
   if (event.key === 'Enter') {
     handleSearch(event); // Triggers search on Enter
@@ -229,27 +233,37 @@ function handleSort(event) {
   const property = properties[index];
   if (!property) return;
 
+  // Toggle direction
   let direction = th.getAttribute('data-sort-dir') || 'asc';
   direction = direction === 'asc' ? 'desc' : 'asc';
   th.setAttribute('data-sort-dir', direction);
 
+  // Clear other header sort indicators (optional)
+  tableHeaders.forEach(header => {
+      if (header !== th) {
+          header.removeAttribute('data-sort-dir');
+      }
+  });
+
   students.sort((a, b) => {
     let aVal = a[property];
     let bVal = b[property];
+
+    let comparison = 0;
+
     if (property === 'id') {
-      aVal = parseInt(aVal, 10);
-      bVal = parseInt(bVal, 10);
-    }
-    if (direction === 'asc') {
-      return property === 'id' ? aVal - bVal : aVal.localeCompare(bVal);
+      // Comparison for ID (as strings or numbers)
+      comparison = String(aVal).localeCompare(String(bVal), undefined, {numeric: true});
     } else {
-      return property === 'id' ? bVal - aVal : bVal.localeCompare(aVal);
+      // String comparison for name/email
+      comparison = aVal.localeCompare(bVal);
     }
+
+    return direction === 'asc' ? comparison : -comparison;
   });
 
   renderTable(students);
 }
-
 /**
  * TODO: Implement the loadStudentsAndInitialize function.
  * This function needs to be 'async'.
@@ -269,29 +283,47 @@ function handleSort(event) {
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
   try {
-    const response = await fetch('students.json');
+    // 1. Fetch data from the server API endpoint
+    const response = await fetch(STUDENT_API_URL);
+
     if (!response.ok) {
-      throw new Error('Failed to load students.json');
+        // If the resource is not yet implemented (e.g., 404), throw an error
+        throw new Error(`HTTP error! status: ${response.status} from ${STUDENT_API_URL}`);
     }
-    students = await response.json();
-    renderTable(students);
+
+    const apiResponse = await response.json();
+
+    // Check for success flag and data array, consistent with assignment API
+    if (apiResponse.success && Array.isArray(apiResponse.data)) {
+        students = apiResponse.data;
+    } else {
+        throw new Error(apiResponse.message || 'API response format error or unsuccessful operation.');
+    }
+
   } catch (error) {
     console.error('Error loading students:', error);
-    // Fallback: Use dummy data if fetch fails
+    // Fallback: Use dummy data if fetch fails (e.g., 404, parsing error)
     students = [
       { name: 'John Doe', id: '12345', email: 'john.doe@example.com' },
-      { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' }
+      { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' },
+      { name: 'Cathy Blue', id: '90010', email: 'Cathy.Blue@example.com' }
     ];
-    renderTable(students);
+    console.warn('Using fallback student data. Implement the "students" API resource for persistent data loading.');
   }
-    changePasswordForm.addEventListener('submit', handleChangePassword);
-  addStudentForm.addEventListener('submit', handleAddStudent);
-  studentTableBody.addEventListener('click', handleTableClick);
-  searchInput.addEventListener('input', handleSearch); // Live search on typing
-  searchInput.addEventListener('keydown', handleSearchKeydown); // Enter key search
+
+  // 5. Render the table (either with fetched data or fallback data)
+  renderTable(students);
+
+  // 6. Set up all the event listeners
+  if (changePasswordForm) changePasswordForm.addEventListener('submit', handleChangePassword);
+  if (addStudentForm) addStudentForm.addEventListener('submit', handleAddStudent);
+  if (studentTableBody) studentTableBody.addEventListener('click', handleTableClick);
+  if (searchInput) {
+    searchInput.addEventListener('input', handleSearch); // Live search on typing
+    searchInput.addEventListener('keydown', handleSearchKeydown); // Enter key search
+  }
   tableHeaders.forEach(th => th.addEventListener('click', handleSort));
 }
-
 // --- Initial Page Load ---
 // Call the main async function to start the application.
 loadStudentsAndInitialize();
