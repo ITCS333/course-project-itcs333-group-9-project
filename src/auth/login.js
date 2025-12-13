@@ -18,16 +18,16 @@
 // the HTML document is parsed before this script runs.
 
 // TODO: Select the login form. (You'll need to add id="login-form" to the <form> in your HTML).
-const loginForm = document.getElementById('login-form');
+const loginForm = document.getElementById("login-form");
 
 // TODO: Select the email input element by its ID.
-const emailInput = document.getElementById('email');
+const emailInput = document.getElementById("email");
 
 // TODO: Select the password input element by its ID.
-const passwordInput = document.getElementById('password');
+const passwordInput = document.getElementById("password");
 
 // TODO: Select the message container element by its ID.
-const messageContainer = document.getElementById('message-container');
+const messageContainer = document.getElementById("message-container");
 
 // --- Functions ---
 
@@ -44,7 +44,7 @@ const messageContainer = document.getElementById('message-container');
  */
 function displayMessage(message, type) {
   // ... your implementation here ...
-  if (messageContainer) { 
+  if (messageContainer) {
     messageContainer.textContent = message;
     messageContainer.ClassName = type;
   }
@@ -116,7 +116,26 @@ function handleLogin(event) {
     return;
   }
 
-  displayMessage("Login successful!", "success");
+  fetch("/src/auth/api/index.php", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        displayMessage("Login successful!", "success");
+        // setTimeout(() => {
+        //   window.location.href = "/";
+        // }, 1000)
+      } else {
+        displayMessage("Invalid email or password.", "error");
+      }
+    });
+
+  // displayMessage("Login successful!", "success");
 }
 
 /**
@@ -130,7 +149,7 @@ function handleLogin(event) {
 function setupLoginForm() {
   // ... your implementation here ...
   if (loginForm) {
-    loginForm.addEventListener('submit', handleLogin);
+    loginForm.addEventListener("submit", handleLogin);
   }
 }
 

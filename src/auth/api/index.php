@@ -17,7 +17,7 @@ session_start();
 // --- Set Response Headers ---
 // TODO: Set the Content-Type header to 'application/json'
 // This tells the browser that we're sending JSON data back
-header('Content-Type: application/json')
+header('Content-Type: application/json');
 
 
 // TODO: (Optional) Set CORS headers if your frontend and backend are on different domains
@@ -86,8 +86,9 @@ if (strlen($password) < 8) {
 // TODO: Get the database connection using the provided function
 // Assume getDBConnection() returns a PDO instance with error mode set to exception
 // The function is defined elsewhere (e.g., in a config file or db.php)
-require_once 'db.php'; 
-$pdo = getDBConnection();
+require_once '../config/Database.php';
+$database = new Database();
+$pdo = $database->getConnection();
 
 
 // TODO: Wrap database operations in a try-catch block to handle PDO exceptions
@@ -100,7 +101,7 @@ try {
     // Use a WHERE clause to filter by email
     // IMPORTANT: Use a placeholder (? or :email) for the email value
     // This prevents SQL injection attacks
-    $sql = "SELECT id, name, email, password FROM users WHERE email = :email";
+    $sql = "SELECT id, name, email, password, is_admin FROM users WHERE email = :email";
 
     // --- Prepare the Statement ---
     // TODO: Prepare the SQL statement using the PDO prepare method
@@ -145,6 +146,7 @@ try {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
+        $_SESSION['is_admin'] = $user['is_admin'];
         $_SESSION['logged_in'] = true;
 
 
@@ -155,11 +157,18 @@ try {
         // - 'user' => array with safe user details (id, name, email)
         //
         // IMPORTANT: Do NOT include the password in the response
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['name'];
-        $_SESSION['user_email'] = $user['email'];
-        $_SESSION['logged_in'] = true;
 
+        $response =
+            [
+                'success' => true,
+                'message' => 'Login successful',
+                'user' => [
+                    'id' => $user['id'],
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                ],
+            ]
+            ;
 
         // TODO: Encode the response array as JSON and echo it
         echo json_encode($response);
