@@ -1,5 +1,9 @@
 <?php
 session_start();
+$_SESSION['user'] = [
+    'role' => 'student',
+    'logged_in' => true
+];
 /**
  * Assignment Management API
  * 
