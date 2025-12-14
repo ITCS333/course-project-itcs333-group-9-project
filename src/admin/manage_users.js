@@ -281,31 +281,46 @@ function handleSort(event) {
  * - "click" on each header in `tableHeaders` -> `handleSort`
  */
 async function loadStudentsAndInitialize() {
-  // ... your implementation here ...
+    // ... your implementation here ...
     try {
-        const response = await fetch(STUDENT_API_URL); 
+        // --- 1. Attempt to fetch from API ---
+        const apiResponse = await fetch(STUDENT_API_URL);
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status} from ${STUDENT_API_URL}`);
+        if (!apiResponse.ok) {
+            throw new Error(`API HTTP error! status: ${apiResponse.status} from ${STUDENT_API_URL}`);
         }
 
-        const apiResponse = await response.json();
+        const apiData = await apiResponse.json();
 
-        if (apiResponse.success && Array.isArray(apiResponse.data)) {
-            students = apiResponse.data;
+        if (apiData.success && Array.isArray(apiData.data)) {
+            students = apiData.data;
         } else {
-            throw new Error(apiResponse.message || 'API response format error or unsuccessful operation.');
+            throw new Error(apiData.message || 'API response format error or unsuccessful operation.');
         }
 
-    } catch (error) {
-        console.error('Error loading students:', error);
-        // Fallback data structure
-        students = [
-            { name: 'John Doe', student_id: '12345', email: 'john.doe@example.com' },
-            { name: 'Ali Hasan', student_id: '02877', email: 'Ali.Hasan@example.com' },
-            { name: 'Cathy Blue', student_id: '90010', email: 'Cathy.Blue@example.com' }
-        ];
-        console.warn('Using fallback student data. Implement the "students" API resource for persistent data loading.');
+    } catch (apiError) {
+        console.warn('API Error, attempting to load local students.json as fallback:', apiError);
+
+        try {
+            // --- 2. Attempt to fetch from local JSON file (Fallback) ---
+            const jsonResponse = await fetch('./api/students.json');
+
+            if (!jsonResponse.ok) {
+                throw new Error(`Local JSON HTTP error! status: ${jsonResponse.status} from students.json`);
+            }
+
+            const jsonData = await jsonResponse.json();
+
+            students = jsonData.map(student => ({
+                name: student.name,
+                student_id: student.id, 
+                email: student.email
+            }));
+
+        } catch (jsonError) {
+            console.error('CRITICAL ERROR: Failed to load students from both API and local JSON.', jsonError);
+            students = []; 
+        }
     }
 
     renderTable(students);
@@ -317,7 +332,7 @@ async function loadStudentsAndInitialize() {
         searchInput.addEventListener('input', handleSearch);
         searchInput.addEventListener('keydown', handleSearchKeydown);
     }
-    tableHeaders.forEach(th => th.addEventListener('click', handleSort))
+    tableHeaders.forEach(th => th.addEventListener('click', handleSort));
 }
 // --- Initial Page Load ---
 // Call the main async function to start the application.

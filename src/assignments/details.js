@@ -217,6 +217,17 @@ async function handleAddComment(event) {
 }
 
 /**
+ * Helper function to fetch a local JSON file (Used for fallback).
+ */
+async function fetchLocalJson(path) {
+    const response = await fetch(path);
+    if (!response.ok) {
+        throw new Error(`Local file error! Status: ${response.status} from ${path}`);
+    }
+    return response.json();
+}
+
+/**
  * TODO: Implement an `initializePage` function.
  * This function needs to be 'async'.
  * It should:
@@ -234,38 +245,70 @@ async function handleAddComment(event) {
  */
 async function initializePage() {
   // ... your implementation here ...
-    try {
-        currentAssignmentId = getAssignmentIdFromURL();
+let assignment = null;
+    let comments = [];
 
-        if (!currentAssignmentId) {
-            assignmentTitle.textContent = "Error: No assignment ID found in URL.";
+    currentAssignmentId = getAssignmentIdFromURL();
+
+    if (!currentAssignmentId) {
+        if (assignmentTitle) assignmentTitle.textContent = "Error: No assignment ID found in URL.";
+        return;
+    }
+
+    try {
+        // --- 1. API Attempt (Primary) ---
+        const assignmentEndpoint = `${API_URL}?resource=assignments&id=${currentAssignmentId}`;
+        assignment = await fetchData(assignmentEndpoint);
+
+        const commentsEndpoint = `${API_URL}?resource=comments&assignment_id=${currentAssignmentId}`;
+        comments = await fetchData(commentsEndpoint);
+
+        console.log(`Successfully loaded data from API for ID: ${currentAssignmentId}`);
+
+    } catch (apiError) {
+        console.warn(`API failed (${apiError.message}). Attempting to load local JSON files as fallback.`);
+        
+        try {
+            // --- 2. Local JSON Fallback ---
+            
+            const [assignmentsData, commentsData] = await Promise.all([
+                fetchLocalJson("./api/assignments.json"),
+                fetchLocalJson("./api/comments.json")
+            ]);
+
+            assignment = assignmentsData.find(a => a.id === currentAssignmentId);
+            
+            comments = commentsData[currentAssignmentId] || [];
+
+            if (assignment && assignment.dueDate) {
+                assignment.due_date = assignment.dueDate;
+            }
+
+            console.log(`Successfully loaded data from local JSON for ID: ${currentAssignmentId}`);
+
+        } catch (jsonError) {
+            // --- 3. Final Failure ---
+            console.error('CRITICAL ERROR: Failed to load data from both API and local JSON.', jsonError);
+            if (assignmentTitle) assignmentTitle.textContent = "CRITICAL ERROR: Failed to load assignment data.";
+            if (assignmentDescription) assignmentDescription.textContent = `Error: ${jsonError.message}. Please check the console.`;
             return;
         }
+    }
 
-        // --- 1. Fetch Assignment Details ---
-        const assignmentEndpoint = `${API_URL}?resource=assignments&id=${currentAssignmentId}`;
-        const assignment = await fetchData(assignmentEndpoint);
 
-        // --- 2. Fetch Comments ---
-        const commentsEndpoint = `${API_URL}?resource=comments&assignment_id=${currentAssignmentId}`;
-        currentComments = await fetchData(commentsEndpoint);
-
-        // --- 3. Render Data ---
-        if (assignment) {
-            renderAssignmentDetails(assignment);
-            renderComments();
+    // --- 4. Render Data and Setup Listener ---
+    if (assignment) {
+        currentComments = comments;
+        renderAssignmentDetails(assignment);
+        renderComments();
+        
+        if (commentForm) {
             commentForm.addEventListener("submit", handleAddComment);
-        } else {
-             // This case should be handled by the 404 response check in fetchData, 
-             // but included for clarity.
-            assignmentTitle.textContent = "Assignment not found for ID: " + currentAssignmentId;
         }
 
-    } catch (error) {
-        // Display a user-friendly error on the page
-        console.error('Error initializing page:', error);
-        assignmentTitle.textContent = "Error loading assignment or comments.";
-        assignmentDescription.textContent = `A detailed error occurred: ${error.message}. Please check the console.`;
+    } else {
+        if (assignmentTitle) assignmentTitle.textContent = "Assignment not found for ID: " + currentAssignmentId;
+        if (assignmentDescription) assignmentDescription.textContent = "The requested assignment could not be located.";
     }
 }
 // --- Initial Page Load ---

@@ -62,21 +62,54 @@ function createAssignmentArticle(assignment) {
  * - Append the returned <article> element to `listSection`.
  */
 async function loadAssignments() {
-// ... your implementation here ...
+let assignments = [];
+    let source = 'API';
+
     try {
-        const response = await fetch("./api/index.php?resource=assignments");
+        // --- 1. Attempt to fetch from API ---
+        const apiResponse = await fetch("./api/index.php?resource=assignments");
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (!apiResponse.ok) {
+            throw new Error(`API HTTP error! status: ${apiResponse.status}`);
         }
 
-        const apiResponse = await response.json();
-        const assignments = apiResponse.data || [];
+        const apiData = await apiResponse.json();
+        assignments = apiData.data || [];
 
+    } catch (apiError) {
+        console.warn(`API failed (${apiError.message}). Attempting to load local assignments.json as fallback.`);
+        source = 'JSON';
+
+        try {
+            // --- 2. Attempt to fetch from local JSON file (Fallback) ---
+            const jsonResponse = await fetch("./api/assignments.json"); 
+
+            if (!jsonResponse.ok) {
+                throw new Error(`Local JSON HTTP error! status: ${jsonResponse.status}`);
+            }
+
+            const jsonData = await jsonResponse.json();
+
+            // (The JSON data structure already matches the necessary keys)
+            assignments = jsonData.map(item => ({
+                id: item.id,
+                title: item.title,
+                dueDate: item.dueDate, 
+                description: item.description 
+            }));
+
+        } catch (jsonError) {
+            console.error('Failed to load assignments from both API and local JSON:', jsonError);
+            assignments = []; 
+            source = 'Failed';
+        }
+    }
+
+    if (listSection) {
         listSection.innerHTML = ''; 
 
         if (assignments.length === 0) {
-            listSection.innerHTML = '<p class="info-message">No assignments found at this time.</p>';
+            listSection.innerHTML = `<p class="info-message">No assignments found at this time. (Source: ${source})</p>`;
             return;
         }
 
@@ -84,17 +117,13 @@ async function loadAssignments() {
             const article = createAssignmentArticle({
                 id: assignment.id,
                 title: assignment.title,
-                dueDate: assignment.due_date, 
+                dueDate: assignment.dueDate || assignment.due_date,
                 description: assignment.description 
             });
             listSection.appendChild(article);
         });
-
-    } catch (error) {
-        console.error('Error loading assignments:', error);
-        if (listSection) {
-             listSection.innerHTML = '<p class="error-message">Failed to load course assignments. Check the console for API errors.</p>';
-        }
+        
+        console.log(`Assignments successfully loaded from ${source}. Total: ${assignments.length}`);
     }
 }
 

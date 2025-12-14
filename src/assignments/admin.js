@@ -206,11 +206,15 @@ async function handleTableClick(event) {
  */
 async function loadAndInitialize() {
       // ... your implementation here ...
+let rawAssignments = [];
+    let source = 'API';
+
     try {
+        // --- 1. Attempt to fetch from API (Primary Source) ---
         const response = await fetch(API_URL);
 
         if (!response.ok) {
-            throw new Error('Network response was not ok');
+            throw new Error(`API Network response was not ok, status: ${response.status}`);
         }
 
         const apiResponse = await response.json();
@@ -219,25 +223,48 @@ async function loadAndInitialize() {
             throw new Error(apiResponse.message || 'API request failed.');
         }
 
-        let apiAssignments = apiResponse.data || [];
+        rawAssignments = apiResponse.data || [];
 
-        assignments = apiAssignments.map(a => ({
-            id: a.id,
-            title: a.title,
-            description: a.description,
-            dueDate: a.due_date,
-            files: a.files || []
-        }));
+    } catch (apiError) {
+        console.warn(`API load failed (${apiError.message}). Falling back to local JSON.`);
+        source = 'JSON';
 
-        renderTable();
+        try {
+            // --- 2. Attempt to fetch from local JSON file (Fallback) ---
+            const mockResponse = await fetch(MOCK_ASSIGNMENTS_URL);
 
-        assignmentForm.addEventListener('submit', handleAddAssignment);
-        assignmentsTableBody.addEventListener('click', handleTableClick);
+            if (!mockResponse.ok) {
+                throw new Error(`Local JSON load failed, status: ${mockResponse.status}`);
+            }
+
+            rawAssignments = await mockResponse.json();
+
+        } catch (jsonError) {
+            console.error('CRITICAL ERROR: Failed to load assignments from both API and JSON.', jsonError);
+            assignments = [];
+            assignmentsTableBody.innerHTML = '<tr><td colspan="3" class="error-message">CRITICAL: Failed to load data from all sources.</td></tr>';
+            
+            assignmentForm.addEventListener('submit', handleAddAssignment);
+            assignmentsTableBody.addEventListener('click', handleTableClick);
+            return;
+        }
     }
-    catch(error){
-        console.error('Error loading assignments:', error.message);
-        assignmentsTableBody.innerHTML = '<tr><td colspan="3" class="error-message">Failed to load data from API. See console.</td></tr>';
-    }
+
+    // --- 3. Process and Store Data ---
+    assignments = rawAssignments.map(a => ({
+        id: a.id,
+        title: a.title,
+        description: a.description,
+        dueDate: a.due_date || a.dueDate, 
+        files: a.files || []
+    }));
+
+    // --- 4. Render Table and Set up Event Listeners ---
+    console.log(`Assignments successfully loaded from ${source}. Total: ${assignments.length}`);
+    renderTable();
+
+    if (assignmentForm) assignmentForm.addEventListener('submit', handleAddAssignment);
+    if (assignmentsTableBody) assignmentsTableBody.addEventListener('click', handleTableClick);
 }
 // --- Initial Page Load ---
 // Call the main async function to start the application.
