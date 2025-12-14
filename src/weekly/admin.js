@@ -115,7 +115,17 @@ function handleAddWeek(event) {
       showToast("You must be logged in as an admin to add a week.", "error");
       return;
     }
+    if (success == 400) {
+      // alert("Week already exists.")
+      showToast(
+        "Week title, starting date, and description fields are required.",
+        "error"
+      );
+      return;
+    }
+
     weeks.push(weekObj);
+    weeks.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     renderTable();
     event.target.reset();
     showToast("Week added successfully!", "success");
@@ -130,14 +140,17 @@ async function customAddWeekToDB(week) {
       },
       body: JSON.stringify({
         week_id: week.id,
-        title: week.title,
+        title: week.title.trim(),
         start_date: week.startDate,
-        description: week.description,
+        description: week.description.trim(),
         links: week.links,
       }),
     });
     const data = await response.json();
     if (!response.ok) {
+      if (response.status == 400) {
+        return 400;
+      }
       throw new Error(`HTTP ${response.status}: ${data.error || data.message}`);
     }
     return true;
@@ -263,6 +276,7 @@ function handleUpdateWeek(event) {
       }
     });
     weeks = newWeekObj;
+    weeks.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
     editingWeekId = null;
     weekForm.reset();
     document.querySelector(".add-week-btn").classList.remove("hide-btn");
