@@ -2,6 +2,7 @@
 // Assuming 'Database.php' contains a static method for PDO connection
 // For this example to be runnable, Database.php must be defined.
 // class Database { public static function getConnection() { /* ... */ } }
+session_start();
 $_SESSION['user'] = [
     'role' => 'student',
     'logged_in' => true
