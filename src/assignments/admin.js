@@ -15,6 +15,7 @@
 // This will hold the assignments loaded from the JSON file.
 let assignments = [];
 const API_URL = "./api/index.php?resource=assignments";
+const MOCK_ASSIGNMENTS_URL = "./api/assignments.json";
 
 // --- Element Selections ---
 // TODO: Select the assignment form ('#assignment-form').
@@ -65,7 +66,6 @@ function renderTable() {
     assignmentsTableBody.innerHTML = '';
 
     if (assignments.length === 0) {
-        // Simple message if table is empty
         assignmentsTableBody.innerHTML = '<tr><td colspan="3">No assignments found.</td></tr>';
         return;
     }
@@ -90,7 +90,6 @@ async function handleAddAssignment(event) {
   // ... your implementation here ...
     event.preventDefault();
 
-    // 1. Collect and validate local form data
     const title = document.getElementById('assignment-title').value;
     const description = document.getElementById('assignment-description').value;
     const dueDate = document.getElementById('assignment-due-date').value;
@@ -104,16 +103,14 @@ async function handleAddAssignment(event) {
         return;
     }
 
-    // Prepare data for the API (use API's snake_case for due date)
     const newAssignmentData = {
         title: title,
         description: description,
-        due_date: dueDate, // API expects 'due_date'
+        due_date: dueDate, 
         files: files
     };
 
     try {
-        // 2. Send POST request to API
         const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
@@ -132,19 +129,16 @@ async function handleAddAssignment(event) {
              throw new Error(apiResponse.message || 'API failed to create assignment.');
         }
 
-        // 3. Add the *API-returned* data (with the real ID) to the local array
         const createdAssignment = apiResponse.data;
 
-        // Map the fields from the API's snake_case to the frontend's camelCase
         assignments.push({
             id: createdAssignment.id,
             title: createdAssignment.title,
             description: createdAssignment.description,
-            dueDate: createdAssignment.due_date, // Mapped field
+            dueDate: createdAssignment.due_date,
             files: createdAssignment.files
         });
 
-        // 4. Update UI
         renderTable();
         assignmentForm.reset();
         alert(`Assignment "${title}" created successfully!`);
@@ -166,7 +160,6 @@ async function handleAddAssignment(event) {
  */
 async function handleTableClick(event) {
   // ... your implementation here ...
-
     if (event.target.classList.contains('delete-btn')) {
         const id = event.target.getAttribute('data-id');
 
@@ -175,7 +168,6 @@ async function handleTableClick(event) {
         }
 
         try {
-            // 1. Send DELETE request to API, including ID as query parameter
             const deleteUrl = `${API_URL}&id=${id}`; 
 
             const response = await fetch(deleteUrl, {
@@ -191,10 +183,8 @@ async function handleTableClick(event) {
                  throw new Error(apiResponse.message || 'API failed to delete assignment.');
             }
 
-            // 2. On success, update the local array by filtering out the deleted ID
             assignments = assignments.filter(assignment => assignment.id !== parseInt(id));
 
-            // 3. Update UI
             renderTable();
             alert('Assignment deleted successfully.');
 
@@ -203,7 +193,6 @@ async function handleTableClick(event) {
             alert('Failed to delete assignment. Check console for details.');
         }
     }
-    // TODO: Add logic for 'edit-btn' here when implementing the edit form.
 }
 /**
  * TODO: Implement the loadAndInitialize function.
@@ -218,7 +207,6 @@ async function handleTableClick(event) {
 async function loadAndInitialize() {
       // ... your implementation here ...
     try {
-        // 1. Fetch data from PHP API
         const response = await fetch(API_URL);
 
         if (!response.ok) {
@@ -233,7 +221,6 @@ async function loadAndInitialize() {
 
         let apiAssignments = apiResponse.data || [];
 
-        // 2. Map the API response fields to match the frontend structure
         assignments = apiAssignments.map(a => ({
             id: a.id,
             title: a.title,
@@ -242,7 +229,6 @@ async function loadAndInitialize() {
             files: a.files || []
         }));
 
-        // 3. Initialize UI and event listeners
         renderTable();
 
         assignmentForm.addEventListener('submit', handleAddAssignment);

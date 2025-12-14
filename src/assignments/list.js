@@ -62,6 +62,7 @@ function createAssignmentArticle(assignment) {
  * - Append the returned <article> element to `listSection`.
  */
 async function loadAssignments() {
+// ... your implementation here ...
     try {
         const response = await fetch("./api/index.php?resource=assignments");
         
