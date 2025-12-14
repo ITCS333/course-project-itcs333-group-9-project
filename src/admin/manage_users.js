@@ -52,13 +52,11 @@ function createStudentRow(student) {
   // ... your implementation here ...
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td>${student.name}</td>
-    <td>${student.id}</td>
-    <td>${student.email}</td>
-    <td>
-      <button class="edit-btn" data-id="${student.id}">Edit</button>
-      <button class="delete-btn" data-id="${student.id}">Delete</button>
-    </td>
+      <td>${student.name}</td>
+      <td>${student.student_id}</td>  <td>${student.email}</td>
+      <td>
+          <button class="edit-btn" data-id="${student.student_id}">Edit</button>
+          <button class="delete-btn" data-id="${student.student_id}">Delete</button> </td>
   `;
   return tr;
 }
@@ -78,8 +76,8 @@ function renderTable(studentArray) {
       return;
   }
   studentArray.forEach(student => {
-    const row = createStudentRow(student);
-    studentTableBody.appendChild(row);
+      const row = createStudentRow(student);
+      studentTableBody.appendChild(row);
   });
 }
 /**
@@ -101,12 +99,12 @@ function handleChangePassword(event) {
   const newPassword = document.getElementById('new-password').value;
   const confirmPassword = document.getElementById('confirm-password').value;
   if ( newPassword !== confirmPassword) {
-    alert("Passwords do not match.");
-    return;
+      alert("Passwords do not match.");
+      return;
   }
-   if (newPassword.length < 8) {
-    alert("Password must be at least 8 characters.");
-    return;
+  if (newPassword.length < 8) {
+      alert("Password must be at least 8 characters.");
+      return;
   }
   alert("Password updated successfully!");
   document.getElementById('current-password').value = '';
@@ -132,19 +130,21 @@ function handleAddStudent(event) {
   // ... your implementation here ...
   event.preventDefault();
   const name = document.getElementById('student-name').value.trim();
-  const id = document.getElementById('student-id').value.trim();
+  const studentId = document.getElementById('student-id').value.trim(); 
   const email = document.getElementById('student-email').value.trim();
-  if (!name || !id || !email) {
-    alert("Please fill out all required fields.");
-    return;
-  }
-  const existingStudent = students.find(student => student.id === id);
-  if (existingStudent) {
-    alert("A student with this ID already exists.");
-    return;
+
+  if (!name || !studentId || !email) {
+      alert("Please fill out all required fields.");
+      return;
   }
 
-  const newStudent = { name, id, email };
+  const existingStudent = students.find(student => student.student_id === studentId); 
+  if (existingStudent) {
+      alert("A student with this ID already exists.");
+      return;
+  }
+
+  const newStudent = { name: name, student_id: studentId, email: email }; 
   students.push(newStudent);
   renderTable(students);
 
@@ -168,13 +168,16 @@ function handleTableClick(event) {
   // ... your implementation here ...
   if (event.target.classList.contains('delete-btn')) {
     const id = event.target.getAttribute('data-id');
-    students = students.filter(student => student.id !== id);
+
+    students = students.filter(student => student.student_id !== id); 
+
     renderTable(students);
   } else if (event.target.classList.contains('edit-btn')) {
     const id = event.target.getAttribute('data-id');
-    const student = students.find(s => s.id === id);
+    
+    const student = students.find(s => s.student_id === id); 
     if (student) {
-      alert(`Edit student: ${student.name} (ID: ${student.id}) - Implement edit form here.`);
+        alert(`Edit student: ${student.name} (ID: ${student.student_id}) - Implement edit form here.`);
     }
   }
 }
@@ -192,21 +195,23 @@ function handleTableClick(event) {
 function handleSearch(event) {
   // ... your implementation here ...
   const searchTerm = searchInput.value.toLowerCase();
-  if (searchTerm === '') {
-    renderTable(students);
-  } else {
-    const filteredStudents = students.filter(student =>
-      student.name.toLowerCase().includes(searchTerm) ||
-      student.id.toLowerCase().includes(searchTerm) ||
-      student.email.toLowerCase().includes(searchTerm)
-    );
-    renderTable(filteredStudents);
+      if (searchTerm === '') {
+          renderTable(students);
+      } else {
+          const filteredStudents = students.filter(student =>
+              student.name.toLowerCase().includes(searchTerm) ||
+              student.student_id.toLowerCase().includes(searchTerm) || 
+              student.email.toLowerCase().includes(searchTerm)
+          );
+          renderTable(filteredStudents);
+      }
   }
-}
-function handleSearchKeydown(event) {
-  if (event.key === 'Enter') {
-    handleSearch(event);
-  }
+
+  function handleSearchKeydown(event)
+    {
+      if (event.key === 'Enter') {
+          handleSearch(event);
+    }
 }
 
 /**
@@ -227,7 +232,8 @@ function handleSort(event) {
   // ... your implementation here ...
   const th = event.currentTarget;
   const index = th.cellIndex;
-  const properties = ['name', 'id', 'email'];
+  
+  const properties = ['name', 'student_id', 'email']; 
   const property = properties[index];
   if (!property) return;
 
@@ -242,18 +248,18 @@ function handleSort(event) {
   });
 
   students.sort((a, b) => {
-    let aVal = a[property];
-    let bVal = b[property];
+      let aVal = a[property];
+      let bVal = b[property];
 
-    let comparison = 0;
+      let comparison = 0;
 
-    if (property === 'id') {
-      comparison = String(aVal).localeCompare(String(bVal), undefined, {numeric: true});
-    } else {
-      comparison = aVal.localeCompare(bVal);
-    }
+      if (property === 'student_id') { 
+          comparison = String(aVal).localeCompare(String(bVal), undefined, {numeric: true});
+      } else {
+          comparison = aVal.localeCompare(bVal);
+      }
 
-    return direction === 'asc' ? comparison : -comparison;
+      return direction === 'asc' ? comparison : -comparison;
   });
 
   renderTable(students);
@@ -277,7 +283,7 @@ function handleSort(event) {
 async function loadStudentsAndInitialize() {
   // ... your implementation here ...
   try {
-    const response = await fetch(STUDENT_API_URL);
+    const response = await fetch(STUDENT_API_URL); 
 
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status} from ${STUDENT_API_URL}`);
@@ -294,9 +300,9 @@ async function loadStudentsAndInitialize() {
   } catch (error) {
     console.error('Error loading students:', error);
     students = [
-      { name: 'John Doe', id: '12345', email: 'john.doe@example.com' },
-      { name: 'Ali Hasan', id: '02877', email: 'Ali.Hasan@example.com' },
-      { name: 'Cathy Blue', id: '90010', email: 'Cathy.Blue@example.com' }
+        { name: 'John Doe', student_id: '12345', email: 'john.doe@example.com' },
+        { name: 'Ali Hasan', student_id: '02877', email: 'Ali.Hasan@example.com' },
+        { name: 'Cathy Blue', student_id: '90010', email: 'Cathy.Blue@example.com' }
     ];
     console.warn('Using fallback student data. Implement the "students" API resource for persistent data loading.');
   }
@@ -307,10 +313,10 @@ async function loadStudentsAndInitialize() {
   if (addStudentForm) addStudentForm.addEventListener('submit', handleAddStudent);
   if (studentTableBody) studentTableBody.addEventListener('click', handleTableClick);
   if (searchInput) {
-    searchInput.addEventListener('input', handleSearch); // Live search on typing
-    searchInput.addEventListener('keydown', handleSearchKeydown); // Enter key search
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('keydown', handleSearchKeydown);
   }
-  tableHeaders.forEach(th => th.addEventListener('click', handleSort));
+  tableHeaders.forEach(th => th.addEventListener('click', handleSort))
 }
 // --- Initial Page Load ---
 // Call the main async function to start the application.
