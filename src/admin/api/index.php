@@ -88,10 +88,18 @@ function getStudents($db) {
     $whereClause = '';
     $params = [];
     if ($search) {
-        $whereClause = 'WHERE name LIKE :search OR student_id LIKE :search OR email LIKE :search';
+        $whereClause = 'WHERE (name LIKE :search OR email LIKE :search)'; 
         $params[':search'] = '%' . $search . '%';
     }
 
+    $adminFilter = 'is_admin = 0';
+
+    if ($whereClause) {
+        $whereClause .= " AND $adminFilter";
+    } else {
+        $whereClause = "WHERE $adminFilter";
+    }
+    
     // TODO: Check if sort and order parameters exist
     // If yes, add ORDER BY clause to the query
     // Validate sort field to prevent SQL injection (only allow: name, student_id, email)
@@ -105,7 +113,7 @@ function getStudents($db) {
 
     // TODO: Prepare the SQL query using PDO
     // Note: Do NOT select the password field
-    $sql = "SELECT id, email AS student_id, name, email, created_at FROM users $whereClause $orderClause";
+    $sql = "SELECT id, id AS student_id, name, email, created_at FROM users $whereClause $orderClause";
     $stmt = $db->prepare($sql);
 
     // TODO: Bind parameters if using search
@@ -133,11 +141,11 @@ function getStudents($db) {
  */
 function getStudentById($db, $studentId) {
     // TODO: Prepare SQL query to select student by student_id
-    $sql = "SELECT id, email AS student_id, name, email, created_at FROM users WHERE email = :email";
+    $sql = "SELECT id, id AS student_id, name, email, created_at FROM users WHERE id = :id";
     $stmt = $db->prepare($sql);
 
     // TODO: Bind the student_id parameter
-    $stmt->bindValue(':email', $studentId);
+    $stmt->bindValue(':id', $studentId);
     
     // TODO: Execute the query
     $stmt->execute();
@@ -239,14 +247,14 @@ function updateStudent($db, $data) {
         return;
     }
 
-    $currentEmail = sanitizeInput($data['student_id']);
+    $currentId = (int)sanitizeInput($data['student_id']);
     
     // TODO: Check if student exists
     // Prepare and execute a SELECT query to find the student
     // If not found, return error response with 404 status
-    $sql = "SELECT id FROM users WHERE email = :email";
+    $sql = "SELECT id FROM users WHERE id = :id";
     $stmt = $db->prepare($sql);
-    $stmt->bindValue(':email', $currentEmail);
+    $stmt->bindValue(':id', $currentId);
     $stmt->execute();
     $student = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$student) {
@@ -329,14 +337,14 @@ function deleteStudent($db, $studentId) {
         return;
     }
 
-    $studentId = sanitizeInput($studentId);
+    $studentId = (int)sanitizeInput($studentId);
     
     // TODO: Check if student exists
     // Prepare and execute a SELECT query
     // If not found, return error response with 404 status
-    $sql = "SELECT id FROM users WHERE email = :email";
+    $sql = "SELECT id FROM users WHERE id = :id";
     $stmt = $db->prepare($sql);
-    $stmt->bindValue(':email', $studentId);
+    $stmt->bindValue(':id', $studentId);
     $stmt->execute();
     if (!$stmt->fetch()) {
         sendResponse(['success' => false, 'message' => 'Student not found'], 404);
@@ -344,11 +352,11 @@ function deleteStudent($db, $studentId) {
     }
     
     // TODO: Prepare DELETE query
-    $sql = "DELETE FROM users WHERE email = :email";
+    $sql = "DELETE FROM users WHERE id = :id";
     $stmt = $db->prepare($sql);
     
     // TODO: Bind the student_id parameter
-    $stmt->bindValue(':email', $studentId);
+    $stmt->bindValue(':id', $studentId);
     
     // TODO: Execute the query
     if ($stmt->execute()) {
