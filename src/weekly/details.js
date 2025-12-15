@@ -218,10 +218,7 @@ function handleDeleteComment(event) {
             return;
           }
           // alert("You must be logged in as to delete your comment.")
-          showToast(
-            "You must be logged in as to delete your comment.",
-            "error"
-          );
+          showToast("You must be logged in to delete your comment.", "error");
           return;
         }
         currentComments.splice(commentIndex, 1);
