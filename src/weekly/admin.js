@@ -100,8 +100,9 @@ function handleAddWeek(event) {
   const title = document.getElementById("week-title").value;
   const startDate = document.getElementById("week-start-date").value;
   const description = document.getElementById("week-description").value;
-  const weekLinks = document.getElementById("week-links").value.split("\n");
-  console.log(weekLinks);
+  const weekLinksRaw = document.getElementById("week-links").value.split("\n");
+  console.log(weekLinksRaw);
+  let weekLinks = weekLinksRaw.filter((link) => link.trim() !== "");
   const weekObj = {
     id: Math.floor(Math.random() * 4294967295 + 1),
     title,
@@ -241,7 +242,8 @@ function handleUpdateWeek(event) {
   const title = document.getElementById("week-title").value;
   const startDate = document.getElementById("week-start-date").value;
   const description = document.getElementById("week-description").value;
-  const weekLinks = document.getElementById("week-links").value.split("\n");
+  const weekLinksRaw = document.getElementById("week-links").value.split("\n");
+  let weekLinks = weekLinksRaw.filter((link) => link.trim() !== "");
   if (title.trim() === "" || startDate.trim() === "") {
     // alert("Title and Start Date are required.");
     showToast("Title and Start Date are required.", "error");
@@ -284,12 +286,12 @@ function handleUpdateWeek(event) {
     document.querySelector(".cancel-update-btn").classList.add("hide-btn");
     renderTable();
     showToast("Week updated successfully!", "success");
+    document.querySelectorAll(".delete-btn").forEach((btn) => {
+      console.log(btn);
+      btn.disabled = false;
+    });
   });
 
-  document.querySelectorAll(".delete-btn").forEach((btn) => {
-    console.log(btn);
-    btn.disabled = false;
-  });
   // event.target.reset();
 
   editingWeekId = null;

@@ -68,6 +68,14 @@ function renderWeekDetails(week) {
   weekDescription.innerText = week.description;
   weekList.innerHTML = "";
 
+  if (week.links.length == 0) {
+    const pElement = document.createElement("p");
+    pElement.innerText = "No resources available for this week.";
+    pElement.classList.add("no-resources");
+    weekList.appendChild(pElement);
+    return;
+  }
+
   week.links.map((link) => {
     const listElement = document.createElement("li");
     console.log(link);
